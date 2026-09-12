@@ -3,6 +3,7 @@ import type {
   CoordinatorProposal,
   CountryState,
   DecisionRecord,
+  NegotiationSession,
   ScoringResult,
   SimulationEvent,
   SimulationMode,
@@ -42,6 +43,7 @@ interface SimulationStoreState {
   decisions: DecisionRecord[];
   proposals: CoordinatorProposal[];
   negotiations: Array<Record<string, unknown>>;
+  negotiationSessions: NegotiationSession[];
   scoring: ScoringResult | null;
   isLoading: boolean;
   error: string | null;
@@ -54,6 +56,8 @@ interface SimulationStoreState {
   setActiveSimulationId: (id: string | null) => void;
   loadInitialState: (simulationId: string, data: FullSimulationStateResponse) => void;
   setSnapshot: (snapshot: SimulationSnapshotPayload) => void;
+  setScoring: (scoring: ScoringResult | null) => void;
+  setNegotiationSessions: (sessions: NegotiationSession[]) => void;
   applyEvent: (envelope: WebSocketEventEnvelope) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -103,6 +107,7 @@ const initialValues = {
   decisions: [],
   proposals: [],
   negotiations: [],
+  negotiationSessions: [] as NegotiationSession[],
   scoring: null,
   isLoading: false,
   error: null,
@@ -130,11 +135,20 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
       ) : null,
     })),
 
+  setScoring: (scoring: ScoringResult | null) => set({ scoring }),
+
+  setNegotiationSessions: (sessions: NegotiationSession[]) =>
+    set({
+      negotiationSessions: sessions,
+      negotiations: sessions as unknown as Array<Record<string, unknown>>,
+    }),
+
   loadInitialState: (simId: string, data: FullSimulationStateResponse) => {
     const countriesMap: Record<string, CountryState> = { ...data.countries };
     const phase = data.crisis_state?.phase ?? 'early_warning';
     const title = data.crisis_state?.title ?? '';
     const severity = data.crisis_state?.severity ?? 0;
+    const negs = (data.negotiations as unknown as NegotiationSession[]) ?? [];
 
     set({
       simulationId: simId,
@@ -153,6 +167,7 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
       decisions: data.decisions ?? [],
       proposals: data.proposals ?? [],
       negotiations: data.negotiations ?? [],
+      negotiationSessions: negs,
       isLoading: false,
       error: null,
       lastUpdated: new Date().toISOString(),
@@ -177,6 +192,7 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
         countriesMap[c.country_id] = c;
       }
     }
+    const negs = (snapshot.negotiations as unknown as NegotiationSession[]) ?? [];
 
     set({
       simulationId: snapshot.simulation_id,
@@ -193,6 +209,7 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
       eventHistory: snapshot.recent_events ?? [],
       proposals: snapshot.proposals ?? [],
       negotiations: snapshot.negotiations ?? [],
+      negotiationSessions: negs,
       scoring: snapshot.scoring_summary ?? null,
       isLoading: false,
       error: null,
@@ -305,7 +322,76 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
         if (prop && (prop.proposal_id || envelope.event_id)) {
           newProposals.unshift(prop);
           newPhase = 'negotiation';
+
+          const propId = String(prop.proposal_id || envelope.event_id || `prop_${Date.now()}`);
+          const evItem: SimulationEvent = {
+            event_id: propId,
+            simulation_id: simId,
+            tick: newTick,
+            time_offset: newTick,
+            timestamp: timestamp,
+            event_type: 'COORDINATOR_PROPOSAL',
+            title: prop.title || 'Multilateral Treaty Proposed',
+            description: prop.summary || prop.rationale || 'Coordinator proposed joint crisis response framework.',
+            severity: 4,
+            payload: prop as unknown as Record<string, unknown>,
+          };
+          newEvents.unshift(evItem);
+          newHistory.unshift(evItem);
         }
+      } else if (type === 'negotiation_started') {
+        const evId = String(payload.session_id || envelope.event_id || `neg_start_${Date.now()}`);
+        const evItem: SimulationEvent = {
+          event_id: evId,
+          simulation_id: simId,
+          tick: newTick,
+          time_offset: newTick,
+          timestamp: timestamp,
+          event_type: 'NEGOTIATION_STARTED',
+          title: 'Multilateral Negotiation Commenced',
+          description: `Treaty deliberation session opened for proposal ${String(payload.proposal_id ?? '')}`,
+          severity: 3,
+          payload,
+        };
+        newEvents.unshift(evItem);
+        newHistory.unshift(evItem);
+        newPhase = 'negotiation';
+      } else if (type === 'negotiation_round_completed') {
+        const evId = String(envelope.event_id || `neg_round_${payload.round_number}_${Date.now()}`);
+        const passed = Boolean(payload.passed);
+        const evItem: SimulationEvent = {
+          event_id: evId,
+          simulation_id: simId,
+          tick: newTick,
+          time_offset: newTick,
+          timestamp: timestamp,
+          event_type: 'NEGOTIATION_ROUND_COMPLETED',
+          title: `Negotiation Round ${payload.round_number ?? ''} Concluded`,
+          description: `Votes cast: ${payload.approvals ?? 0} Approve, ${payload.rejections ?? 0} Reject, ${payload.undecided ?? 0} Undecided. Status: ${passed ? 'Ratified' : 'Revision Required'}.`,
+          severity: passed ? 2 : 4,
+          payload,
+        };
+        newEvents.unshift(evItem);
+        newHistory.unshift(evItem);
+      } else if (type === 'negotiation_outcome') {
+        const evId = String(envelope.event_id || `neg_outcome_${Date.now()}`);
+        const reached = Boolean(payload.agreement_reached);
+        const evItem: SimulationEvent = {
+          event_id: evId,
+          simulation_id: simId,
+          tick: newTick,
+          time_offset: newTick,
+          timestamp: timestamp,
+          event_type: 'NEGOTIATION_OUTCOME',
+          title: `Treaty Final Outcome: ${String(payload.final_status || (reached ? 'ACCEPTED' : 'DEADLOCK'))}`,
+          description: reached
+            ? `Multilateral agreement ratified with ${Math.round(Number(payload.coordination_score ?? 0) * 100)}% consensus.`
+            : `Negotiation concluded without consensus. Unresolved issues: ${Array.isArray(payload.unresolved_issues) ? payload.unresolved_issues.length : 0}`,
+          severity: reached ? 1 : 5,
+          payload,
+        };
+        newEvents.unshift(evItem);
+        newHistory.unshift(evItem);
       } else if (
         type === 'crisis_event_triggered' ||
         type === 'crisis_escalated' ||
@@ -330,7 +416,27 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
         newHistory.unshift(evItem);
         if (payload.phase) newPhase = String(payload.phase);
       } else if (type === 'scoring_completed' || type === 'score_update') {
-        newScoring = payload as unknown as ScoringResult;
+        const scorePayload = payload as unknown as ScoringResult;
+        if (newScoring) {
+          newScoring = { ...newScoring, ...scorePayload };
+        } else {
+          newScoring = scorePayload;
+        }
+        const evId = String(scorePayload.scoring_id || envelope.event_id || `score_${Date.now()}`);
+        const evItem: SimulationEvent = {
+          event_id: evId,
+          simulation_id: simId,
+          tick: newTick,
+          time_offset: newTick,
+          timestamp: timestamp,
+          event_type: 'SCORING_COMPLETED',
+          title: `Governance Score: Grade ${scorePayload.score_grade || scorePayload.letter_grade || 'Recorded'} (${scorePayload.overall_score ?? 0}/100)`,
+          description: scorePayload.performance_headline || 'Deterministic governance engine completed evaluation.',
+          severity: 2,
+          payload,
+        };
+        newEvents.unshift(evItem);
+        newHistory.unshift(evItem);
       }
 
       return {

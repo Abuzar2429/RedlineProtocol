@@ -6,9 +6,9 @@ import {
   SkipForward,
   Square,
   Clock,
-  TrendingUp,
-  GitCompare,
   ArrowLeft,
+  FileText,
+  Radio,
 } from 'lucide-react';
 import { apiClient } from '../../services/api/client';
 import { getWebSocketClient } from '../../services/websocket/client';
@@ -19,6 +19,9 @@ import { ErrorState } from '../../components/feedback/ErrorState';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { WorldMap } from '../../components/map/WorldMap';
 import { LiveEventFeed } from '../../components/feed/LiveEventFeed';
+import { MetricsBar } from '../../components/metrics';
+import { NegotiationPanel } from '../../components/negotiation';
+import { SimulationTimeline } from '../../components/timeline';
 import type { CountryData } from '../../types';
 
 export const SimulationPage: React.FC = () => {
@@ -29,12 +32,16 @@ export const SimulationPage: React.FC = () => {
   const currentSimulation = useSimulationStore((s) => s.currentSimulation);
   const setActiveSimulationId = useSimulationStore((s) => s.setActiveSimulationId);
   const loadInitialState = useSimulationStore((s) => s.loadInitialState);
+  const setScoring = useSimulationStore((s) => s.setScoring);
+  const setNegotiationSessions = useSimulationStore((s) => s.setNegotiationSessions);
+  const proposals = useSimulationStore((s) => s.proposals);
   const setError = useSimulationStore((s) => s.setError);
   const storeError = useSimulationStore((s) => s.error);
 
   const [countryProfiles, setCountryProfiles] = useState<Record<string, CountryData>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [controlActionInProgress, setControlActionInProgress] = useState<string | null>(null);
+  const [rightPanelTab, setRightPanelTab] = useState<'negotiation' | 'feed'>('negotiation');
 
   // Initialize and synchronize simulation session
   const initializeSession = useCallback(async (simId: string) => {
@@ -43,13 +50,21 @@ export const SimulationPage: React.FC = () => {
     try {
       setActiveSimulationId(simId);
 
-      // 1. Fetch authoritative initial state and country profiles via REST
-      const [initialState, countriesList] = await Promise.all([
+      // 1. Fetch authoritative initial state, country profiles, initial score and negotiations via REST
+      const [initialState, countriesList, initialScore, initialNegs] = await Promise.all([
         apiClient.getFullSimulationState(simId),
         apiClient.getCountries().catch(() => [] as CountryData[]),
+        apiClient.getScore(simId).catch(() => null),
+        apiClient.getNegotiations(simId).catch(() => []),
       ]);
 
       loadInitialState(simId, initialState);
+      if (initialScore) {
+        setScoring(initialScore);
+      }
+      if (initialNegs && initialNegs.length > 0) {
+        setNegotiationSessions(initialNegs);
+      }
 
       const profilesMap: Record<string, CountryData> = {};
       countriesList.forEach((c) => {
@@ -71,7 +86,7 @@ export const SimulationPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [setActiveSimulationId, loadInitialState, setError, addToast]);
+  }, [setActiveSimulationId, loadInitialState, setScoring, setNegotiationSessions, setError, addToast]);
 
   useEffect(() => {
     if (!simulationId) {
@@ -335,53 +350,58 @@ export const SimulationPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Phase 11 Visual Simulation Layer: Interactive World Map & Live Multilateral Event Feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Phase 12 Deterministic Governance Metrics Bar */}
+      <MetricsBar />
+
+      {/* Primary Visual Theater: World Map & Diplomatic Negotiation Chamber / Live Feed */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* World Map with Country Markers and Slide-Out Intelligence Panel */}
         <div className="lg:col-span-2">
           <WorldMap countryProfiles={countryProfiles} />
         </div>
 
-        {/* Live Multilateral Event Feed */}
-        <div className="lg:col-span-1">
-          <LiveEventFeed />
+        {/* Right Panel: Tabbed Negotiation Chamber & Multilateral Live Feed */}
+        <div className="lg:col-span-1 flex flex-col space-y-3">
+          {/* Panel Selector Tabs */}
+          <div className="flex items-center space-x-1 p-1 rounded-xl bg-slate-900/90 border border-slate-800 shadow-sm">
+            <button
+              onClick={() => setRightPanelTab('negotiation')}
+              className={`flex-1 py-1.5 px-3 text-xs font-mono font-semibold rounded-lg transition-colors cursor-pointer flex items-center justify-center space-x-1.5 ${
+                rightPanelTab === 'negotiation'
+                  ? 'bg-slate-800 text-cyan-300 shadow-sm border border-slate-700'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Treaty Chamber</span>
+              {proposals.length > 0 && (
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse ml-1" />
+              )}
+            </button>
+            <button
+              onClick={() => setRightPanelTab('feed')}
+              className={`flex-1 py-1.5 px-3 text-xs font-mono font-semibold rounded-lg transition-colors cursor-pointer flex items-center justify-center space-x-1.5 ${
+                rightPanelTab === 'feed'
+                  ? 'bg-slate-800 text-cyan-300 shadow-sm border border-slate-700'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Radio className="w-3.5 h-3.5" />
+              <span>Live Feed</span>
+            </button>
+          </div>
+
+          {/* Active Tab Content */}
+          {rightPanelTab === 'negotiation' ? (
+            <NegotiationPanel />
+          ) : (
+            <LiveEventFeed />
+          )}
         </div>
       </div>
 
-      {/* Modular Shell Placeholder Areas for Subsequent Phases (Phases 12 & 13) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
-        {/* Metrics & Scoring Slot (Phase 12 Foundation) */}
-        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/40 p-5 flex flex-col items-center justify-center text-center">
-          <div className="p-2 rounded-full bg-slate-900 text-slate-400 mb-2">
-            <TrendingUp className="w-5 h-5" />
-          </div>
-          <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">
-            Phase 12 Foundation Slot
-          </div>
-          <h3 className="text-xs font-semibold text-slate-300 mb-1">
-            Deterministic Governance Metrics
-          </h3>
-          <p className="text-xs text-slate-500 max-w-sm">
-            Cooperation Index, Stability Index, Escalation Rate, and Regulatory Compliance gauges.
-          </p>
-        </div>
-
-        {/* Negotiation & Voting Slot (Phase 12 & 13 Foundation) */}
-        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/40 p-5 flex flex-col items-center justify-center text-center">
-          <div className="p-2 rounded-full bg-slate-900 text-slate-400 mb-2">
-            <GitCompare className="w-5 h-5" />
-          </div>
-          <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">
-            Phase 12 & 13 Foundation Slots
-          </div>
-          <h3 className="text-xs font-semibold text-slate-300 mb-1">
-            Multilateral Negotiation & Mode Comparison
-          </h3>
-          <p className="text-xs text-slate-500 max-w-sm">
-            Coordinator treaty proposals, treaty voting rounds, and comparative telemetry across Autonomous, HITL, and Hybrid modes.
-          </p>
-        </div>
-      </div>
+      {/* Phase 12 Chronological Simulation Timeline */}
+      <SimulationTimeline />
     </div>
   );
 };

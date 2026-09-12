@@ -9,10 +9,13 @@ import type {
   CreateSimulationResponse,
   FullSimulationStateResponse,
   HealthResponse,
+  MetricResult,
+  NegotiationSession,
   RAGHealthResponse,
   ScenarioData,
   ScoringResult,
   SimulationEvent,
+  SimulationMetrics,
   SimulationStepResponse,
   SimulationSummary,
 } from '../../types';
@@ -198,6 +201,23 @@ export class ApiClient {
 
   getScore(id: string): Promise<ScoringResult> {
     return this.request<ScoringResult>(`/api/simulations/${id}/score`);
+  }
+
+  getLiveMetrics(id: string): Promise<SimulationMetrics> {
+    return this.request<SimulationMetrics>(`/api/simulations/${id}/metrics`);
+  }
+
+  getScoreBreakdown(id: string): Promise<MetricResult[]> {
+    return this.request<MetricResult[]>(`/api/simulations/${id}/score/breakdown`);
+  }
+
+  // ── Negotiations & Voting ──────────────────────────────────────────────────
+  getNegotiations(id: string): Promise<NegotiationSession[]> {
+    return this.request<NegotiationSession[]>(`/api/simulations/${id}/negotiations`);
+  }
+
+  getNegotiation(id: string, negotiationId: string): Promise<NegotiationSession> {
+    return this.request<NegotiationSession>(`/api/simulations/${id}/negotiations/${negotiationId}`);
   }
 
   // ── RAG ────────────────────────────────────────────────────────────────────
