@@ -11,12 +11,20 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // During development, proxy /api/* to the FastAPI backend
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/ws': {
+        target: 'ws://localhost:8000',
+        ws: true,
       },
     },
+  },
+  // @ts-expect-error vitest types
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
   },
 })
