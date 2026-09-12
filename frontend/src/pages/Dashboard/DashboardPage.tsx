@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, RefreshCw, AlertTriangle, ShieldCheck, Database, Layers, Radio } from 'lucide-react';
+import { Play, RefreshCw, AlertTriangle, ShieldCheck, Database, Layers, Radio, Scale, ChevronRight } from 'lucide-react';
 import { apiClient } from '../../services/api/client';
 import type { ScenarioData, RAGHealthResponse } from '../../types/api';
 import type { SimulationSummary, SimulationMode } from '../../types/simulation';
@@ -246,6 +246,29 @@ export const DashboardPage: React.FC = () => {
                 </>
               )}
             </button>
+
+            {/* Phase 13 Three-Mode Comparison Banner */}
+            <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/20 via-slate-900 to-slate-950 p-4 flex items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400 uppercase">
+                  <Scale className="w-3.5 h-3.5" />
+                  <span>Phase 13 Signature Feature</span>
+                </div>
+                <h3 className="text-sm font-bold text-slate-100 mt-0.5">
+                  Three-Mode Comparative Evaluation
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Empirically test this crisis across Unilateral, Coalition, and Multilateral governance architectures side-by-side.
+                </p>
+              </div>
+              <button
+                onClick={() => navigate('/comparisons')}
+                className="shrink-0 flex items-center gap-1 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs font-mono transition-colors shadow-md shadow-amber-950/40"
+              >
+                <span>Compare Modes</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 

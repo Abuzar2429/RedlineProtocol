@@ -142,3 +142,59 @@ async def simulation_websocket_api_alias(websocket: WebSocket, simulation_id: st
     API-prefixed alias for WebSocket streaming: /api/ws/simulations/{id}.
     """
     await _handle_websocket_connection(simulation_id, websocket)
+
+
+# ── Comparison WebSocket Streaming — Phase 13 ──────────────────────────────────
+
+async def _handle_comparison_websocket_connection(comparison_id: str, websocket: WebSocket) -> None:
+    """
+    Handler for comparison session WebSocket streaming.
+    Broadcasts real-time mode transitions and final synthesis.
+    """
+    from app.services.comparison_service import default_comparison_repository
+
+    run = default_comparison_repository.get(comparison_id)
+    # Register client connection using comparison_id as simulation_id channel
+    await default_websocket_manager.connect(comparison_id, websocket)
+
+    try:
+        if run:
+            snap_env = WebSocketEventEnvelope(
+                type="event",
+                event_type="COMPARISON_SNAPSHOT",
+                simulation_id=comparison_id,
+                payload=run.model_dump(),
+            )
+            await websocket.send_json(snap_env.model_dump())
+
+        while True:
+            data = await websocket.receive_json()
+            if isinstance(data, dict) and data.get("action") == "ping":
+                pong_env = WebSocketEventEnvelope(
+                    type="pong",
+                    event_type="PONG",
+                    simulation_id=comparison_id,
+                    payload={"status": "alive", "comparison_id": comparison_id},
+                )
+                await websocket.send_json(pong_env.model_dump())
+
+    except (WebSocketDisconnect, RuntimeError):
+        logger.info("WebSocket client disconnected from comparison [%s]", comparison_id)
+    finally:
+        await default_websocket_manager.disconnect(comparison_id, websocket)
+
+
+@router.websocket("/ws/comparisons/{comparison_id}")
+async def comparison_websocket_endpoint(websocket: WebSocket, comparison_id: str):
+    """
+    WebSocket streaming endpoint for Phase 13 comparison runs: /ws/comparisons/{id}.
+    """
+    await _handle_comparison_websocket_connection(comparison_id, websocket)
+
+
+@router.websocket("/api/ws/comparisons/{comparison_id}")
+async def comparison_websocket_api_alias(websocket: WebSocket, comparison_id: str):
+    """
+    API-prefixed alias for comparison WebSocket streaming: /api/ws/comparisons/{id}.
+    """
+    await _handle_comparison_websocket_connection(comparison_id, websocket)

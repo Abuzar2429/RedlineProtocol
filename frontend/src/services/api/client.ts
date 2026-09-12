@@ -224,6 +224,54 @@ export class ApiClient {
   getRAGHealth(): Promise<RAGHealthResponse> {
     return this.request<RAGHealthResponse>('/api/rag/health');
   }
+
+  // ── Comparisons — Phase 13 ─────────────────────────────────────────────────
+  createComparison(
+    data: { scenario_id: string; max_ticks?: number; metadata?: Record<string, unknown> },
+    background = false
+  ): Promise<import('../../types').ComparisonRun> {
+    const q = background ? '?background=true' : '';
+    return this.request<import('../../types').ComparisonRun>(`/api/comparisons${q}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }, 60000); // 60s timeout for multi-mode execution
+  }
+
+  listComparisons(): Promise<import('../../types').ComparisonRun[]> {
+    return this.request<import('../../types').ComparisonRun[]>('/api/comparisons');
+  }
+
+  getComparison(id: string): Promise<import('../../types').ComparisonRun> {
+    return this.request<import('../../types').ComparisonRun>(`/api/comparisons/${id}`);
+  }
+
+  getComparisonStatus(id: string): Promise<{
+    comparison_id: string;
+    scenario_id: string;
+    status: import('../../types').ComparisonStatus;
+    winner?: string | null;
+    modes_completed: number;
+    total_modes: number;
+  }> {
+    return this.request<{
+      comparison_id: string;
+      scenario_id: string;
+      status: import('../../types').ComparisonStatus;
+      winner?: string | null;
+      modes_completed: number;
+      total_modes: number;
+    }>(`/api/comparisons/${id}/status`);
+  }
+
+  getComparisonModeResult(id: string, mode: string): Promise<import('../../types').ModeComparisonResult> {
+    return this.request<import('../../types').ModeComparisonResult>(`/api/comparisons/${id}/modes/${mode}`);
+  }
+
+  runComparison(id: string): Promise<import('../../types').ComparisonRun> {
+    return this.request<import('../../types').ComparisonRun>(`/api/comparisons/${id}/run`, {
+      method: 'POST',
+    }, 60000);
+  }
 }
 
 export const apiClient = new ApiClient();

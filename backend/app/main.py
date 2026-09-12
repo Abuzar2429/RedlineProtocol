@@ -106,6 +106,7 @@ def create_app() -> FastAPI:
     # Phase 7: Deterministic Scoring Engine endpoints
     # Phase 8: REST API & WebSocket Layer
     # Phase 9: RAG Engine
+    # Phase 13: Three-Mode Comparison Engine
     from app.api.routes import (
         countries_router,
         scenarios_router,
@@ -114,6 +115,7 @@ def create_app() -> FastAPI:
         scoring_router,
         websocket_router,
         rag_router,
+        comparisons_router,
     )
     app.include_router(countries_router)
     app.include_router(scenarios_router)
@@ -122,6 +124,7 @@ def create_app() -> FastAPI:
     app.include_router(scoring_router)
     app.include_router(websocket_router)
     app.include_router(rag_router)
+    app.include_router(comparisons_router)
 
     return app
 

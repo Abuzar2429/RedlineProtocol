@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Radio, Cpu, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Radio, Cpu, BookOpen, ChevronLeft, ChevronRight, Scale } from 'lucide-react';
 import { useUIStore } from '../../stores/uiStore';
 import { useSimulationStore } from '../../stores/simulationStore';
 
@@ -22,6 +22,13 @@ export const Sidebar: React.FC = () => {
       icon: Radio,
       badge: activeSimId ? 'LIVE' : null,
       badgeColor: 'bg-cyan-900 text-cyan-300 border-cyan-700',
+    },
+    {
+      to: '/comparisons',
+      label: '3-Mode Comparison',
+      icon: Scale,
+      badge: 'P13',
+      badgeColor: 'bg-amber-950 text-amber-300 border-amber-800',
     },
   ];
 
