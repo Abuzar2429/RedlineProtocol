@@ -70,6 +70,8 @@ class CoordinatorProposal(BaseModel):
     confidence: float = Field(0.8, ge=0.0, le=1.0, description="Coordinator confidence score (0.0 to 1.0)")
     source: str = Field("llm_coordinator", description="'llm_coordinator' or 'deterministic_fallback'")
     status: str = Field("PROPOSED", description="Always PROPOSED; Coordinator cannot self-approve")
+    governance_frameworks: List[str] = Field(default_factory=list, description="Governance documents or frameworks referenced")
+    rag_sources: List[str] = Field(default_factory=list, description="Retrieved evidence citations (Phase 9)")
 
     # Traceability & Provenance
     model: Optional[str] = Field(None, description="Model identifier used")

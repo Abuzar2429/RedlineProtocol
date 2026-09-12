@@ -100,6 +100,15 @@ def build_coordinator_user_prompt(context: CoordinatorContext) -> str:
             f"Description: {context.current_event.get('description', '')}"
         )
 
+    # Governance Frameworks (RAG)
+    governance_text = ""
+    if getattr(context, "governance_frameworks", None):
+        governance_text = (
+            "\n## Relevant Governance Frameworks & Treaties (RAG Reference Data)\n"
+            + "\n".join([f"- {fw}" for fw in context.governance_frameworks])
+            + "\n"
+        )
+
     return f"""## Crisis Summary
 Crisis ID: {context.crisis_id}
 Title: {context.crisis_title}
@@ -124,7 +133,7 @@ Summary: {context.crisis_summary}
 
 ## Past Proposals
 {past_text}
-
+{governance_text}
 ## Coordination Task
 1. Propose a balanced multilateral response that maximizes international agreement while mitigating systemic crisis risk.
 2. Formulate 2 to 4 actionable items addressing common-ground capabilities (e.g. verified information sharing, technical safety audits, containment).

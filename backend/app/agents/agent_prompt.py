@@ -68,6 +68,10 @@ def build_country_user_prompt(context: DecisionContext) -> str:
         else "- No public diplomatic cables verified yet."
     )
 
+    rag_section = ""
+    if getattr(context, "rag_context", None) and context.rag_context.strip():
+        rag_section = f"\n{context.rag_context.strip()}\n"
+
     return f"""### SIMULATION DATA — CONFIDENTIAL CRISIS BRIEFING
 Country: {context.country_name} ({context.country_id})
 Simulation Time: {context.current_time} (Tick {context.current_tick})
@@ -86,7 +90,7 @@ Situation Summary: {context.crisis_description}
 ### DIPLOMATIC ALIGNMENTS
 - Confirmed Allies: {', '.join(context.allies) if context.allies else 'None'}
 - Strategic Rivals: {', '.join(context.rivals) if context.rivals else 'None'}
-
+{rag_section}
 ### AVAILABLE ACTIONS
 {actions_text}
 

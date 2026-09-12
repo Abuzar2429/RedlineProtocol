@@ -62,3 +62,5 @@ class DecisionContext(BaseModel):
     available_actions: List[Dict[str, Any]]
     allies: List[str]
     rivals: List[str]
+    rag_context: str = Field("", description="Retrieved governance framework excerpts (Phase 9)")
+    rag_sources: List[str] = Field(default_factory=list, description="Citations of retrieved governance documents (Phase 9)")

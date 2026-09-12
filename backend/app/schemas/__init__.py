@@ -67,6 +67,15 @@ from app.schemas.websocket_models import (
     WebSocketEventEnvelope,
     WebSocketEventType,
 )
+from app.schemas.rag_models import (
+    DocumentChunk,
+    RetrievedEvidence,
+    RAGQueryRequest,
+    RAGQueryResponse,
+    RAGHealthResponse,
+    RAGTrace,
+    IngestionReport,
+)
 
 __all__ = [
     "RootResponse",
@@ -112,5 +121,12 @@ __all__ = [
     "WebSocketClientMessage",
     "WebSocketEventEnvelope",
     "WebSocketEventType",
+    "DocumentChunk",
+    "RetrievedEvidence",
+    "RAGQueryRequest",
+    "RAGQueryResponse",
+    "RAGHealthResponse",
+    "RAGTrace",
+    "IngestionReport",
 ]
 

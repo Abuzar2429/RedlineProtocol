@@ -7,7 +7,7 @@ import asyncio
 import json
 import logging
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from app.agents.coordinator_context_builder import CoordinatorContextBuilder
 from app.agents.coordinator_models import (
@@ -64,6 +64,29 @@ class CoordinatorAgent:
             current_event=current_event,
             country_catalog=country_catalog,
         )
+
+        # Phase 9: Retrieve RAG governance evidence
+        rag_context = ""
+        rag_citations = []
+        try:
+            from app.rag.engine import get_rag_engine
+            rag_engine = get_rag_engine()
+            unresolved = []
+            if state.negotiations and state.negotiations[-1].rounds:
+                unresolved = state.negotiations[-1].rounds[-1].unresolved_issues
+            rag_context, rag_citations = rag_engine.build_coordinator_context(
+                crisis_title=state.crisis_state.title,
+                unresolved_issues=unresolved,
+                simulation_id=state.simulation_id,
+                tick=state.current_tick,
+            )
+            if rag_citations:
+                context.governance_frameworks.extend(rag_citations)
+        except Exception as rag_err:
+            logger.warning("CoordinatorAgent RAG retrieval error: %s; continuing ungrounded", rag_err)
+            rag_context = ""
+            rag_citations = []
+
         user_prompt = build_coordinator_user_prompt(context)
 
         # 2. Invoke LLM with retry
@@ -102,6 +125,7 @@ class CoordinatorAgent:
             current_event=current_event,
             round_index=round_index,
             llm_result=llm_result,
+            rag_sources=rag_citations,
         )
 
         if validated_proposal is None:
@@ -126,6 +150,7 @@ class CoordinatorAgent:
         current_event: Optional[SimulationEvent],
         round_index: int,
         llm_result: Any,
+        rag_sources: Optional[List[str]] = None,
     ) -> Optional[CoordinatorProposal]:
         """
         Parses JSON response, validates against Pydantic schema and business rules.
@@ -217,6 +242,8 @@ class CoordinatorAgent:
                 confidence=float(raw_dict.get("confidence", 0.80)),
                 source="llm_coordinator",
                 status="PROPOSED",
+                governance_frameworks=rag_sources or [],
+                rag_sources=rag_sources or [],
                 model=getattr(llm_result, "model", self.model),
                 provider=getattr(llm_result, "provider", "llm"),
                 latency_ms=getattr(llm_result, "latency_ms", 0.0),

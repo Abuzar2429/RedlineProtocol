@@ -1,7 +1,7 @@
 """
 Decision Context Builder enforcing strict information boundaries for Country Agents.
 """
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from app.agents.agent_models import DecisionContext
 from app.schemas.data_models import CountryData, ScenarioData
@@ -20,6 +20,8 @@ class DecisionContextBuilder:
         country: CountryData,
         state: SimulationState,
         scenario: ScenarioData,
+        rag_context: str = "",
+        rag_sources: Optional[List[str]] = None,
     ) -> DecisionContext:
         country_state = state.countries.get(country.id)
         awareness_status = country_state.status if country_state else "Unaware"
@@ -64,4 +66,6 @@ class DecisionContextBuilder:
             available_actions=available_actions,
             allies=list(country.allies),
             rivals=list(country.rivals),
+            rag_context=rag_context,
+            rag_sources=rag_sources or [],
         )

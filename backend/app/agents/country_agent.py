@@ -55,10 +55,36 @@ class CountryAgent:
         4. Validates structured output schema and business constraints.
         5. Falls back to deterministic decision maker on any failure.
         """
+        # Phase 9: Retrieve RAG evidence if available
+        rag_context = ""
+        rag_citations = []
+        try:
+            from app.rag.engine import get_rag_engine
+            rag_engine = get_rag_engine()
+            rag_context, rag_citations = rag_engine.build_country_context(
+                country_name=self.country.name,
+                priorities=list(self.country.strategic_priorities),
+                crisis_title=state.crisis_state.title,
+                crisis_summary=scenario.description,
+                simulation_id=state.simulation_id,
+                tick=tick,
+                country_id=self.country.id,
+            )
+        except Exception as rag_err:
+            logger.warning(
+                "CountryAgent[%s] RAG retrieval error: %s; continuing ungrounded",
+                self.country.id,
+                rag_err,
+            )
+            rag_context = ""
+            rag_citations = []
+
         context = DecisionContextBuilder.build_context(
             country=self.country,
             state=state,
             scenario=scenario,
+            rag_context=rag_context,
+            rag_sources=rag_citations,
         )
         user_prompt = build_country_user_prompt(context)
 
@@ -132,6 +158,8 @@ class CountryAgent:
             willingness_to_coordinate=validated_decision.willingness_to_coordinate,
             expected_reactions=validated_decision.expected_reactions,
             prompt_version=COUNTRY_AGENT_PROMPT_VERSION,
+            rag_grounded=bool(rag_citations),
+            rag_sources=rag_citations,
         )
 
     def _parse_and_validate(

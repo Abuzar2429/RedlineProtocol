@@ -97,6 +97,10 @@ class DecisionRecord(BaseModel):
     expected_reactions: Optional[str] = Field(None, description="Anticipated diplomatic reactions")
     prompt_version: Optional[str] = Field(None, description="Prompt version tag")
 
+    # RAG provenance & citations (Phase 9)
+    rag_grounded: bool = Field(False, description="Whether decision was grounded with RAG reference evidence")
+    rag_sources: List[str] = Field(default_factory=list, description="Retrieved evidence citations or document IDs")
+
 
 class SimulationState(BaseModel):
     simulation_id: str = Field(..., description="Unique UUID simulation identifier")

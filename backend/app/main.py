@@ -47,6 +47,18 @@ async def lifespan(app: FastAPI):
         # environment where only the API layer is being tested.
         logger.warning("Database unavailable at startup: %s", exc)
 
+    # Phase 9: Ensure RAG vector store is initialized
+    try:
+        from app.rag.vector_store import get_vector_store
+        from app.rag.ingestion import get_ingestion_service
+        v_store = get_vector_store()
+        if getattr(settings, "RAG_ENABLED", True) and v_store.count() == 0:
+            logger.info("Vector store empty at startup; ingesting governance documents...")
+            ingest_service = get_ingestion_service()
+            ingest_service.ingest_all()
+    except Exception as rag_init_err:
+        logger.warning("RAG startup initialization warning: %s", rag_init_err)
+
     yield
 
     logger.info("Shutting down %s", settings.APP_NAME)
@@ -93,6 +105,7 @@ def create_app() -> FastAPI:
     # Phase 6: Negotiation & Voting endpoints
     # Phase 7: Deterministic Scoring Engine endpoints
     # Phase 8: REST API & WebSocket Layer
+    # Phase 9: RAG Engine
     from app.api.routes import (
         countries_router,
         scenarios_router,
@@ -100,6 +113,7 @@ def create_app() -> FastAPI:
         negotiations_router,
         scoring_router,
         websocket_router,
+        rag_router,
     )
     app.include_router(countries_router)
     app.include_router(scenarios_router)
@@ -107,6 +121,7 @@ def create_app() -> FastAPI:
     app.include_router(negotiations_router)
     app.include_router(scoring_router)
     app.include_router(websocket_router)
+    app.include_router(rag_router)
 
     return app
 

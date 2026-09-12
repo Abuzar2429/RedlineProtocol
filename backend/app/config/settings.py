@@ -37,6 +37,17 @@ class Settings(BaseSettings):
     COORDINATOR_MODEL: str = "claude-sonnet-4-6"
     COORDINATOR_TEMPERATURE: float = 0.3
 
+    # ── RAG & Vector Store Configuration — Phase 9 ────────────────────────────
+    RAG_ENABLED: bool = True
+    CHROMA_PERSIST_DIRECTORY: str = "backend/data/chroma_db"
+    CHROMA_COLLECTION_NAME: str = "governance_documents"
+    EMBEDDING_PROVIDER: str = "mock"       # "mock" | "sentence_transformers" | "openai"
+    EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
+    EMBEDDING_API_KEY: str = ""
+    RAG_TOP_K: int = 5
+    RAG_CHUNK_SIZE: int = 500              # tokens
+    RAG_CHUNK_OVERLAP: int = 50            # tokens
+
     # ── Misc ─────────────────────────────────────────────────────────────────
     LOG_LEVEL: str = "INFO"
 
