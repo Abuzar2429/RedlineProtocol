@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Radio, Cpu, BookOpen, ChevronLeft, ChevronRight, Scale, PlaySquare } from 'lucide-react';
+import { LayoutDashboard, Radio, ChevronLeft, ChevronRight, Scale, PlaySquare } from 'lucide-react';
 import { useUIStore } from '../../stores/uiStore';
 import { useSimulationStore } from '../../stores/simulationStore';
 
@@ -78,20 +78,24 @@ export const Sidebar: React.FC = () => {
           ))}
         </nav>
 
-        {/* Phase Scope / Future Modules indicator */}
+        {/* Active Command System Engines indicator */}
         {!sidebarCollapsed && (
           <div className="mt-6 px-4">
             <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2">
-              Future Modules
+              System Architecture
             </div>
-            <div className="space-y-1 text-xs text-slate-400">
-              <div className="flex items-center space-x-2 py-1 px-2 rounded hover:bg-slate-900/30">
-                <BookOpen className="w-3.5 h-3.5 text-slate-400" />
-                <span>World Map (P11)</span>
+            <div className="space-y-1.5 text-xs text-slate-400 font-mono">
+              <div className="flex items-center space-x-2 py-1 px-2 rounded bg-slate-900/40 border border-slate-800/60">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                <span className="text-[11px] text-slate-300">Simulation Clock (P3)</span>
               </div>
-              <div className="flex items-center space-x-2 py-1 px-2 rounded hover:bg-slate-900/30">
-                <Cpu className="w-3.5 h-3.5 text-slate-400" />
-                <span>Negotiation (P12)</span>
+              <div className="flex items-center space-x-2 py-1 px-2 rounded bg-slate-900/40 border border-slate-800/60">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span className="text-[11px] text-slate-300">Voting Engine (P6)</span>
+              </div>
+              <div className="flex items-center space-x-2 py-1 px-2 rounded bg-slate-900/40 border border-slate-800/60">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                <span className="text-[11px] text-slate-300">Deterministic Scoring (P7)</span>
               </div>
             </div>
           </div>

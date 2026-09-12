@@ -1,74 +1,81 @@
 # AI Governance Crisis Simulator
 
-A multi-agent simulation platform demonstrating how international AI governance strategy shapes the outcome of AI crises.
-
-> **"The same crisis, governed differently, produces measurably different outcomes."**
-
----
-
-## Architecture
-
-```
-      React Frontend  (port 5173)
-             │
-             ▼ HTTP / WebSocket (Phase 8+)
-      FastAPI Backend  (port 8000)
-             │
-             ▼
-         PostgreSQL  (port 5432)
-```
+> **An interactive command-center simulation platform demonstrating how international AI governance strategies shape the outcome of cross-border AI crises.**
+>
+> *"The same crisis, governed differently, produces measurably different outcomes."*
 
 ---
 
-## Requirements
+## Executive Overview
 
-| Software        | Minimum Version | Notes                          |
-|-----------------|-----------------|--------------------------------|
-| Python          | 3.11            | Backend runtime                |
-| Node.js         | 18              | Frontend build tool            |
-| npm             | 9               | Package manager                |
-| PostgreSQL      | 14              | Via Docker Compose (see below) |
-| Docker          | 24              | For local database             |
+The **AI Governance Crisis Simulator** is an empirical, multi-agent evaluation platform for international artificial intelligence policy. When critical frontier AI systems experience catastrophic cross-border failures, national governments must coordinate incident response under severe uncertainty, geopolitical friction, and asymmetric intelligence.
+
+The simulator compares three distinct governance regimes on the exact same crisis scenario:
+1. **Unilateral (No Coordination)**: Sovereign unilateral doctrine; independent state action with zero multilateral accord.
+2. **Coalition (Partial Coordination)**: Bilateral/regional coalitions operating under 50% quorum and simple majority.
+3. **Multilateral (Coordinated Governance)**: Inclusive multilateral treaty body operating under 60% quorum and qualified majority accord.
+
+Outcomes are evaluated deterministically using a code-driven **4-Pillar Scoring Engine**:
+- **Risk Reduction (%)**: Incident containment, spread prevention, and mitigation efficacy.
+- **Response Timeliness (Minutes)**: Detection-to-action velocity across diplomatic channels.
+- **Coordination Ratio**: Degree of multilateral consensus and collective treaty compliance.
+- **Unresolved Policy Issues**: Critical liabilities, unaddressed contagion vectors, and diplomatic impasse points.
+
+---
+
+## System Architecture
+
+```
+                                 ┌────────────────────────┐
+                                 │   Frontend Command     │
+                                 │   Center (React/Vite)  │
+                                 └───────────┬────────────┘
+                                             │ REST / WebSocket
+                                             ▼
+                                 ┌────────────────────────┐
+                                 │    FastAPI Backend     │
+                                 │  (Port 8000, Python)   │
+                                 └───────────┬────────────┘
+                   ┌─────────────────────────┼─────────────────────────┐
+                   ▼                         ▼                         ▼
+        ┌────────────────────┐    ┌────────────────────┐    ┌────────────────────┐
+        │ Simulation Clock & │    │ Country Agents &   │    │ Deterministic      │
+        │ Event Queue Engine │    │ Coordinator (RAG)  │    │ Scoring (4 Pillars)│
+        └──────────┬─────────┘    └──────────┬─────────┘    └──────────┬─────────┘
+                   │                         │                         │
+                   └─────────────────────────┼─────────────────────────┘
+                                             ▼
+                                 ┌────────────────────────┐
+                                 │ Three-Mode Comparison  │
+                                 │ & Authoritative Replay │
+                                 └────────────────────────┘
+```
+
+---
+
+## Key Capabilities
+
+- **Deterministic Simulation Engine**: Discrete-tick event clock (`T+00`, `T+03`, `T+05`...) with asymmetric information delays and priority queues.
+- **15 Fictional Nations**: Distinct national AI priorities, risk tolerances, decision speeds, and regulatory doctrines.
+- **Multilateral Negotiation & Voting**: Multi-round diplomatic protocol with structured amendments, quorum validation, qualified majorities, and deadlock resolution.
+- **RAG Governance Grounding**: Contextual retrieval from six core international governance frameworks (EU AI Act principles, OECD recommendations, US Executive Orders, NIST RMF, ISO/IEC 42001, G7 Hiroshima Process).
+- **Three-Mode Comparison View**: Head-to-head empirical benchmarking of all three coordination modes on identical scenarios.
+- **Seeded Demo & Authoritative Replay**: 100% reproducible offline presentation execution with timeline scrubbing, step-by-step playback, and speed controls.
+- **Zero-Network Fallbacks**: Gracefully operates offline without external API keys or network dependencies.
 
 ---
 
 ## Quick Start
 
-### 1. Clone & configure
+### 1. Requirements
 
-```bash
-git clone <repo-url>
-cd RedlineProtocol
-```
+| Component | Version | Description |
+|---|---|---|
+| **Python** | `>= 3.11` | Backend runtime & scientific libraries |
+| **Node.js** | `>= 18` | Frontend toolchain & build pipeline |
+| **npm** | `>= 9` | Frontend dependency manager |
 
-Copy environment templates (do this for both backend and frontend):
-
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-```
-
-Edit `backend/.env` with your settings (especially `ANTHROPIC_API_KEY` for Phase 3+).
-
----
-
-### 2. Database (PostgreSQL via Docker)
-
-```bash
-docker compose up -d postgres
-```
-
-This starts PostgreSQL on `localhost:5432` with:
-- **User**: `postgres`
-- **Password**: `postgres`
-- **Database**: `crisis_simulator`
-
-To stop: `docker compose down`
-To wipe data: `docker compose down -v`
-
----
-
-### 3. Backend
+### 2. Backend Setup
 
 ```bash
 cd backend
@@ -76,136 +83,108 @@ cd backend
 # Create virtual environment
 python -m venv .venv
 
-# Activate — Windows PowerShell
+# Activate (Windows PowerShell)
 .venv\Scripts\Activate.ps1
 
-# Activate — Unix/macOS
+# Activate (Linux / macOS)
 source .venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Start development server
-uvicorn app.main:app --reload
+# Start development API server
+uvicorn app.main:app --port 8000 --reload
 ```
 
-API is now available at **http://localhost:8000**
+API Documentation (Swagger UI): `http://localhost:8000/docs`
 
-Swagger UI: **http://localhost:8000/docs** (development mode only)
-
----
-
-### 4. Frontend
+### 3. Frontend Setup
 
 ```bash
 cd frontend
 
+# Install dependencies
 npm install
 
+# Start development command center
 npm run dev
 ```
 
-Frontend is now available at **http://localhost:5173**
+Frontend Command Center: `http://localhost:5173`
 
 ---
 
-## Verification
+## Presentation & Demo Walkthrough
 
-### Backend health check
+### 1. Launching the Seeded Demo
+1. Open `http://localhost:5173/demo` (or click **Demo & Replay Center** in the sidebar).
+2. Confirm the **DEMO MODE** badge displays deterministic `Seed: 42` and `Deterministic Fallback: Active`.
+3. Click **Run Seeded Demo (3 Modes)**.
+4. Watch the simulator sequentially execute `uncoordinated`, `fragmented`, and `coordinated` modes through the authoritative simulation pipeline.
+5. Review the **Authoritative Winner Banner**, 3-column breakdown cards, cross-mode metric comparison bars, and comparative pillar deltas.
 
-```bash
-curl http://localhost:8000/health
-# Expected: {"status":"healthy"}
+### 2. Replay Scrubbing
+1. Switch to the **2. Authoritative Replay** tab.
+2. Use the timeline slider to scrub to any historical tick (`T+00` to `T+XX`).
+3. Use **Step Forward** / **Step Back** buttons or toggle **Play / Pause** and playback speed (`1x`, `2x`, `4x`).
+4. Replay displays authoritative recorded events without re-running LLMs or mutating source results.
 
-curl http://localhost:8000/
-# Expected: {"message":"AI Governance Crisis Simulator API"}
-```
+---
 
-### Backend tests
+## Testing & Quality Assurance
 
+### Backend Automated Test Suite
 ```bash
 cd backend
-pytest tests/ -v
+python -m pytest -v
+# 162 passed across all 15 phases
 ```
 
-### Frontend production build
+### Frontend Automated Test Suite
+```bash
+cd frontend
+npm test -- --run
+# 69 passed across 13 test suites
+```
 
+### Frontend Typecheck & Production Build
 ```bash
 cd frontend
 npm run build
+# tsc -b && vite build (0 errors)
+```
+
+### Frontend Code Linter
+```bash
+cd frontend
+npm run lint
+# oxlint (0 warnings, 0 errors across 69 files)
 ```
 
 ---
 
-## Project Structure
+## Phase Implementation Registry
 
-```
-RedlineProtocol/
-├── backend/
-│   ├── app/
-│   │   ├── main.py          # FastAPI app factory
-│   │   ├── config/          # Settings (env vars)
-│   │   ├── core/            # Database session & base
-│   │   ├── api/             # Route handlers (Phase 2+)
-│   │   ├── models/          # SQLAlchemy ORM models (Phase 2+)
-│   │   ├── schemas/         # Pydantic request/response schemas
-│   │   └── services/        # Business logic (Phase 2+)
-│   ├── tests/
-│   ├── requirements.txt
-│   ├── .env.example
-│   └── README.md
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── services/        # API service layer
-│   │   ├── types/           # TypeScript types
-│   │   ├── App.tsx          # Root shell
-│   │   └── main.tsx         # Entry point
-│   ├── .env.example
-│   └── README.md
-│
-├── docs/                    # Project documentation
-├── docker-compose.yml       # PostgreSQL for development
-├── .gitignore
-└── README.md  ← you are here
-```
+| Phase | Milestone | Status |
+|:---:|---|:---:|
+| **01** | Repository Foundation & Stack Configuration | ✅ Completed |
+| **02** | Static Governance, Country & Scenario Data Layer | ✅ Completed |
+| **03** | Deterministic Event Engine & Simulation Clock | ✅ Completed |
+| **04** | Country Agents & Structured Decision Providers | ✅ Completed |
+| **05** | International Coordinator Agent & Treaty Synthesis | ✅ Completed |
+| **06** | Multilateral Negotiation & Voting Protocols | ✅ Completed |
+| **07** | Deterministic 4-Pillar Scoring Engine | ✅ Completed |
+| **08** | REST API & Real-Time WebSocket Streaming | ✅ Completed |
+| **09** | RAG Engine & Document Grounding | ✅ Completed |
+| **10** | Command Center Shell & Frontend Client Layer | ✅ Completed |
+| **11** | Interactive World Map & Real-Time Intelligence Feed | ✅ Completed |
+| **12** | Governance Metrics Bar, Treaty Chamber & Timeline | ✅ Completed |
+| **13** | Three-Mode Comparative Engine & Synthesis View | ✅ Completed |
+| **14** | Presentation Demo Path, Seeded Replay & Fallbacks | ✅ Completed |
+| **15** | Final Polish, Motion Accessibility & Complete QA | ✅ Completed |
 
 ---
 
-## Environment Variables
+## Safety & Non-Proliferation Boundary
 
-### Backend (`backend/.env`)
-
-| Variable            | Default                               | Description                        |
-|---------------------|---------------------------------------|------------------------------------|
-| `APP_ENV`           | `development`                         | Runtime environment                |
-| `DEBUG`             | `true`                                | Enables Swagger UI                 |
-| `DATABASE_URL`      | `postgresql+asyncpg://postgres:postgres@localhost:5432/crisis_simulator` | PostgreSQL connection |
-| `API_HOST`          | `0.0.0.0`                             | Uvicorn bind host                  |
-| `API_PORT`          | `8000`                                | Uvicorn bind port                  |
-| `CORS_ORIGINS`      | `http://localhost:5173,...`           | Allowed frontend origins           |
-| `ANTHROPIC_API_KEY` | —                                     | Required for Phase 3+ (LLM agents) |
-
-### Frontend (`frontend/.env`)
-
-| Variable              | Default                   | Description         |
-|-----------------------|---------------------------|---------------------|
-| `VITE_API_BASE_URL`   | `http://localhost:8000`   | Backend API URL     |
-
----
-
-## Implementation Phases
-
-| Phase | Goal                                  | Status    |
-|-------|---------------------------------------|-----------|
-| 1     | Repo & Stack Setup                    | ✅ Done    |
-| 2     | Crisis Event Engine                   | ⬜ Planned |
-| 3     | LLM Country Agents                    | ⬜ Planned |
-| 4     | Negotiation & Coordination            | ⬜ Planned |
-| 5     | Deterministic Scoring Engine          | ⬜ Planned |
-| 6     | Full Dashboard                        | ⬜ Planned |
-| 7     | RAG / Governance Grounding            | ⬜ Planned |
-| 8     | WebSocket Live Streaming              | ⬜ Planned |
-| 9     | Comparative Runs                      | ⬜ Planned |
-| 10    | Polish & Demo Prep                    | ⬜ Planned |
+The AI Governance Crisis Simulator is strictly a **civilian international policy and multilateral crisis governance simulation**. It models diplomatic coordination, early incident notification, evidence sharing, and safety protocols under fictional scenarios. It does not model tactical weapon systems, kinetic conflict, offensive cyber exploits, or operational military directives.

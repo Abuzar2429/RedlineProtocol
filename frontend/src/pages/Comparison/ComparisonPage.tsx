@@ -75,16 +75,16 @@ export const ComparisonPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">
             <Scale className="w-4 h-4" />
-            <span>Phase 13 • Three-Mode Comparison Engine</span>
+            <span>Multilateral Policy Evaluation • Comparative Engine</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
             Governance Strategy Comparison View
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
             Empirically evaluate the exact same fictional crisis scenario across three distinct
-            governance architectures: <span className="text-rose-400">No Coordination</span>,{' '}
-            <span className="text-amber-400">Partial Coordination</span>, and{' '}
-            <span className="text-emerald-400">Full Coordinated Governance</span>.
+            governance architectures: <span className="text-rose-400 font-medium">No Coordination</span>,{' '}
+            <span className="text-amber-400 font-medium">Partial Coordination</span>, and{' '}
+            <span className="text-emerald-400 font-medium">Full Coordinated Governance</span>.
           </p>
         </div>
 
@@ -98,7 +98,7 @@ export const ComparisonPage: React.FC = () => {
                   navigate(`/comparisons/${e.target.value}`);
                 }
               }}
-              className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-2 font-mono"
+              className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-2 font-mono focus-visible:ring-2 focus-visible:ring-cyan-500"
             >
               <option value="" disabled>Select Previous Comparison</option>
               {comparisons.map((c) => (
@@ -112,19 +112,18 @@ export const ComparisonPage: React.FC = () => {
       </div>
 
       {/* Launcher Bar (if no active comparison or to run another) */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 card-hover">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex flex-col">
             <label className="text-[10px] font-mono uppercase text-slate-400 mb-1">Target Scenario</label>
             <select
               value={selectedScenarioId}
               onChange={(e) => setSelectedScenarioId(e.target.value)}
-              disabled={isExecuting}
-              className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 font-mono"
+              className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 font-mono focus-visible:ring-2 focus-visible:ring-cyan-500"
             >
               {scenarios.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.title} ({s.severity} Severity)
+                  {s.title} (Severity: {s.severity}/10)
                 </option>
               ))}
             </select>
@@ -134,49 +133,51 @@ export const ComparisonPage: React.FC = () => {
             <label className="text-[10px] font-mono uppercase text-slate-400 mb-1">Max Simulation Ticks</label>
             <input
               type="number"
-              min={20}
-              max={180}
+              min={10}
+              max={120}
               value={maxTicks}
               onChange={(e) => setMaxTicks(Number(e.target.value))}
-              disabled={isExecuting}
-              className="w-24 bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 font-mono"
+              className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 font-mono w-24 focus-visible:ring-2 focus-visible:ring-cyan-500"
             />
           </div>
         </div>
 
         <button
           onClick={handleLaunchComparison}
-          disabled={isExecuting}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-slate-950 font-semibold text-xs font-mono transition-colors shadow-lg shadow-cyan-950/40"
+          disabled={isExecuting || isLoading}
+          data-testid="launch-comparison-btn"
+          className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs uppercase tracking-wider font-mono flex items-center justify-center gap-2 shadow-lg shadow-amber-950/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400"
         >
           {isExecuting ? (
             <>
               <RotateCcw className="w-4 h-4 animate-spin" />
-              <span>Orchestrating 3 Runs...</span>
+              <span>Running All 3 Modes...</span>
             </>
           ) : (
             <>
               <Play className="w-4 h-4 fill-current" />
-              <span>Run 3-Mode Comparison</span>
+              <span>Launch 3-Mode Comparison</span>
             </>
           )}
         </button>
       </div>
 
-      {/* Real-time Execution Progress Tracker */}
+      {/* Progress Status Bar if executing */}
       {isExecuting && (
-        <div className="rounded-xl border border-cyan-800/80 bg-cyan-950/20 p-4 space-y-3">
-          <div className="flex items-center gap-2 text-xs font-mono text-cyan-300">
-            <RotateCcw className="w-4 h-4 animate-spin text-cyan-400" />
-            <span className="font-semibold">Sequential Execution in Progress:</span>
-            <span className="text-slate-400">Executing same scenario through all three modes</span>
+        <div className="rounded-xl border border-cyan-800/80 bg-cyan-950/20 backdrop-blur p-4 space-y-2">
+          <div className="flex items-center justify-between text-xs font-mono text-cyan-300">
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              Simulation Pipeline Active: Executing governance architectures sequentially...
+            </span>
+            <span>Scenario: {selectedScenarioId}</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3 pt-2">
             {modesList.map((m) => {
               const prog = modeProgress[m];
-              const isWaiting = !prog || prog.status === 'WAITING';
               const isRunning = prog?.status === 'RUNNING';
+              const isWaiting = prog?.status === 'WAITING' || !prog?.status;
               const isDone = prog?.status === 'COMPLETED';
 
               return (
@@ -184,7 +185,7 @@ export const ComparisonPage: React.FC = () => {
                   key={m}
                   className={`p-3 rounded-lg border text-xs font-mono flex items-center justify-between ${
                     isRunning
-                      ? 'border-cyan-500 bg-cyan-950/40 text-cyan-200'
+                      ? 'border-cyan-500 bg-cyan-950/40 text-cyan-200 animate-pulse'
                       : isDone
                       ? 'border-emerald-700 bg-emerald-950/30 text-emerald-300'
                       : 'border-slate-800 bg-slate-950/30 text-slate-500'
@@ -236,7 +237,7 @@ export const ComparisonPage: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-semibold">
-                    Deterministic Winner (Phase 7 Rule: Highest Overall Score)
+                    Authoritative Decision Matrix (Highest Composite Score)
                   </div>
                   <h2 className="text-xl font-bold text-slate-100 mt-0.5">
                     {currentRun.winner === 'TIE'

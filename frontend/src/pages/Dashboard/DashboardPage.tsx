@@ -144,7 +144,7 @@ export const DashboardPage: React.FC = () => {
                 </h2>
               </div>
               <span className="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800 px-2 py-0.5 rounded">
-                PHASE 10 SHELL
+                SIMULATION SHELL
               </span>
             </div>
 
@@ -247,12 +247,12 @@ export const DashboardPage: React.FC = () => {
               )}
             </button>
 
-            {/* Phase 13 Three-Mode Comparison Banner */}
-            <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/20 via-slate-900 to-slate-950 p-4 flex items-center justify-between gap-4">
+            {/* Three-Mode Comparison Banner */}
+            <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/20 via-slate-900 to-slate-950 p-4 flex items-center justify-between gap-4 card-hover">
               <div>
                 <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400 uppercase">
                   <Scale className="w-3.5 h-3.5" />
-                  <span>Phase 13 Signature Feature</span>
+                  <span>Comparative Governance Matrix</span>
                 </div>
                 <h3 className="text-sm font-bold text-slate-100 mt-0.5">
                   Three-Mode Comparative Evaluation
@@ -263,19 +263,19 @@ export const DashboardPage: React.FC = () => {
               </div>
               <button
                 onClick={() => navigate('/comparisons')}
-                className="shrink-0 flex items-center gap-1 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs font-mono transition-colors shadow-md shadow-amber-950/40"
+                className="shrink-0 flex items-center gap-1 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs font-mono transition-colors shadow-md shadow-amber-950/40 cursor-pointer"
               >
                 <span>Compare Modes</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            {/* Phase 14 Seeded Demo & Replay Center Banner */}
-            <div className="rounded-xl border border-purple-500/40 bg-gradient-to-r from-purple-950/20 via-slate-900 to-slate-950 p-4 flex items-center justify-between gap-4">
+            {/* Seeded Demo & Replay Center Banner */}
+            <div className="rounded-xl border border-purple-500/40 bg-gradient-to-r from-purple-950/20 via-slate-900 to-slate-950 p-4 flex items-center justify-between gap-4 card-hover">
               <div>
                 <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-purple-400 uppercase">
                   <Radio className="w-3.5 h-3.5" />
-                  <span>Phase 14 Presentation System</span>
+                  <span>Deterministic Presentation Engine</span>
                 </div>
                 <h3 className="text-sm font-bold text-slate-100 mt-0.5">
                   Seeded Demo & Authoritative Replay Center
