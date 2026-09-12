@@ -508,3 +508,225 @@ async def test_api_scoring_lifecycle():
         # 7. Non-existent simulation 404
         bad_res = await client.post("/api/simulations/sim_non_existent/score")
         assert bad_res.status_code == 404
+
+
+# ── 7. Additional Edge Case & Boundary Tests ──────────────────────────────────
+
+def test_edge_case_zero_events_and_immediate_completion():
+    """Simulation completing at tick 0 with 0 events and no actions."""
+    snap = ScoringInputSnapshot(
+        simulation_id="sim_zero_events",
+        scenario_id="scenario_01",
+        mode="no_coordination",
+        start_tick=0,
+        initial_tick=0,
+        final_tick=0,
+        simulation_status="COMPLETED",
+        crisis_phase="DETECTION",
+        unique_actions_taken=[],
+        action_risk_reductions={},
+        detection_tick=0,
+        coordinated_action_tick=None,
+        coordinated_action_occurred=False,
+        total_countries=15,
+        participating_countries=[],
+        approving_countries=[],
+        opposing_countries=[],
+        undecided_countries=[],
+        negotiation_sessions_count=0,
+        negotiation_rounds_count=0,
+        final_agreement_reached=False,
+        events_count=0,
+    )
+    res = default_scoring_engine.evaluate_snapshot(snap)
+    assert res.overall_score >= 0.0
+    assert res.metrics.risk_final == 100.0
+    assert res.metrics.risk_reduction_pct == 0.0
+    assert res.metrics.coordination_ratio == 0.0
+    assert res.score_grade in ("D", "F")
+
+
+def test_edge_case_no_quorum_all_opposing_or_abstaining():
+    """All countries either oppose or abstain; 0 approvals."""
+    snap = ScoringInputSnapshot(
+        simulation_id="sim_no_quorum",
+        scenario_id="scenario_01",
+        mode="coordinated",
+        start_tick=0,
+        final_tick=25,
+        simulation_status="COMPLETED",
+        crisis_phase="ESCALATION",
+        unique_actions_taken=["early_detection"],
+        total_countries=15,
+        participating_countries=[f"country_{i:02d}" for i in range(1, 16)],
+        approving_countries=[],
+        opposing_countries=[f"country_{i:02d}" for i in range(1, 10)],
+        undecided_countries=[f"country_{i:02d}" for i in range(10, 16)],
+        negotiation_sessions_count=1,
+        negotiation_rounds_count=3,
+        final_agreement_reached=False,
+        unresolved_issues_raw=["Liability", "Sovereignty", "Monitoring"],
+    )
+    res = default_scoring_engine.evaluate_snapshot(snap)
+    assert res.metrics.coordination_ratio == 0.0
+    assert res.metrics.countries_coordinating == 0
+    assert res.metrics.agreement_reached is False
+    assert res.metrics.unresolved_issues_count == 3
+
+
+def test_edge_case_all_countries_supporting():
+    """100% unanimous approval across all 15 countries with fast coordination."""
+    all_c = [f"country_{i:02d}" for i in range(1, 16)]
+    snap = ScoringInputSnapshot(
+        simulation_id="sim_unanimous",
+        scenario_id="scenario_01",
+        mode="coordinated",
+        start_tick=0,
+        final_tick=12,
+        simulation_status="COMPLETED",
+        crisis_phase="CONTAINED",
+        unique_actions_taken=[
+            "early_detection",
+            "international_alert",
+            "system_containment",
+            "joint_investigation",
+            "evidence_sharing",
+        ],
+        detection_tick=0,
+        coordinated_action_tick=8,
+        coordinated_action_occurred=True,
+        total_countries=15,
+        participating_countries=all_c,
+        approving_countries=all_c,
+        opposing_countries=[],
+        undecided_countries=[],
+        negotiation_sessions_count=1,
+        negotiation_rounds_count=1,
+        final_agreement_reached=True,
+        unresolved_issues_raw=[],
+    )
+    res = default_scoring_engine.evaluate_snapshot(snap)
+    assert res.metrics.coordination_ratio == 1.0
+    assert res.metrics.countries_coordinating == 15
+    assert res.metrics.risk_reduction_pct >= 80.0
+    assert res.score_grade == "A"
+    assert res.overall_score >= 85.0
+
+
+def test_edge_case_max_negotiation_rounds_unresolved():
+    """Negotiation hits max rounds (3) without resolving and collapses."""
+    snap = ScoringInputSnapshot(
+        simulation_id="sim_max_rounds_failed",
+        scenario_id="scenario_01",
+        mode="coordinated",
+        start_tick=0,
+        final_tick=45,
+        simulation_status="COMPLETED",
+        crisis_phase="CRITICAL",
+        unique_actions_taken=["early_detection"],
+        detection_tick=0,
+        coordinated_action_tick=None,
+        coordinated_action_occurred=False,
+        total_countries=15,
+        participating_countries=[f"country_{i:02d}" for i in range(1, 16)],
+        approving_countries=["country_01", "country_02"],
+        opposing_countries=[f"country_{i:02d}" for i in range(3, 16)],
+        undecided_countries=[],
+        negotiation_sessions_count=1,
+        negotiation_rounds_count=3,
+        final_agreement_reached=False,
+        final_negotiation_status="COLLAPSED",
+        unresolved_issues_raw=["Liability", "Attribution", "Sanctions", "Audit Access", "Export Controls"],
+    )
+    res = default_scoring_engine.evaluate_snapshot(snap)
+    assert res.metrics.agreement_reached is False
+    assert res.metrics.negotiation_rounds == 3
+    assert res.metrics.unresolved_issues_count == 5
+    assert res.metrics.coordination_ratio == pytest.approx(2 / 15, 0.001)
+    assert res.score_grade in ("D", "F")
+
+
+def test_invalid_scoring_input_validation():
+    """Scoring engine properly rejects invalid snapshots with empty simulation_id or negative countries."""
+    with pytest.raises(ValueError, match="simulation_id cannot be empty"):
+        snap_bad_id = ScoringInputSnapshot(
+            simulation_id="",
+            scenario_id="scenario_01",
+            mode="coordinated",
+            final_tick=10,
+            simulation_status="COMPLETED",
+            crisis_phase="DETECTION",
+            total_countries=15,
+        )
+        default_scoring_engine.evaluate_snapshot(snap_bad_id)
+
+
+def test_scoring_orm_models():
+    """Validates instantiation of SQLAlchemy ORM models."""
+    from app.models.scoring_orm import MetricResultORM, ScoringResultORM, ScoringSnapshotORM
+
+    orm_score = ScoringResultORM(
+        scoring_id="score_orm_test",
+        simulation_id="sim_orm_test",
+        scenario_id="scenario_01",
+        simulation_mode="coordinated",
+        formula_version="1.0",
+        overall_score=88.5,
+        score_grade="A",
+        performance_headline="Optimal Multilateralism",
+        simulation_status="COMPLETED",
+        calculated_at_tick=15,
+        is_authoritative=True,
+        mode_comparison_ready=True,
+    )
+    assert orm_score.scoring_id == "score_orm_test"
+    assert orm_score.overall_score == 88.5
+
+    orm_metric = MetricResultORM(
+        scoring_id="score_orm_test",
+        metric_id="risk_reduction",
+        name="Risk Reduction",
+        raw_value=75.0,
+        unit="%",
+        display_value="↓75%",
+        normalized_score=75.0,
+        weight=0.25,
+        weighted_score=18.75,
+        interpretation="Strong risk mitigation",
+        evidence={"initial_risk": 100.0},
+    )
+    assert orm_metric.metric_id == "risk_reduction"
+
+    orm_snap = ScoringSnapshotORM(
+        snapshot_id="snap_orm_test",
+        simulation_id="sim_orm_test",
+        scenario_id="scenario_01",
+        mode="coordinated",
+        final_tick=15,
+        snapshot_data={"test": True},
+    )
+    assert orm_snap.snapshot_id == "snap_orm_test"
+
+
+@pytest.mark.anyio
+async def test_api_require_completed_validation():
+    """Verifies that require_completed=True rejects a RUNNING simulation with 400 Bad Request."""
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        create_res = await client.post(
+            "/api/simulations",
+            json={"scenario_id": "scenario_01", "mode": "coordinated"},
+        )
+        sim_id = create_res.json()["simulation_id"]
+        # Step once (now RUNNING)
+        await client.post(f"/api/simulations/{sim_id}/step")
+
+        # Request score with require_completed=True should fail 400
+        res = await client.post(f"/api/simulations/{sim_id}/score?require_completed=true")
+        assert res.status_code == 400
+        assert "requires a COMPLETED simulation" in res.json()["detail"]
+
+        # Regular request with require_completed=False (default) should succeed
+        res_ok = await client.post(f"/api/simulations/{sim_id}/score")
+        assert res_ok.status_code == 200
+

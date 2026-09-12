@@ -9,3 +9,4 @@ Project documentation lives in the root markdown files:
 - [`rules.md`](../rules.md) — Simulation Rules
 - [`phases.md`](../phases.md) — Implementation Phases
 - [`AI_Governance_Crisis_Simulator_Roadmap.md`](../AI_Governance_Crisis_Simulator_Roadmap.md) — Roadmap
+- [`phase_7_scoring_engine.md`](phase_7_scoring_engine.md) — Phase 7 Deterministic Scoring Engine Documentation

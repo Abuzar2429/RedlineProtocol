@@ -7,6 +7,7 @@ All metrics are pure mathematical functions:
 - Explicit boundary clamping and division-by-zero protection
 - Strict adherence to rules.md §5, spec.md §6, and PRD §7.5
 """
+import math
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.schemas.scoring_models import MetricId, MetricResult, ScoreGrade

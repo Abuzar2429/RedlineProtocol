@@ -147,15 +147,43 @@ class ScoringSnapshotBuilder:
             approving_countries + opposing_countries + undecided_countries
         ))
 
-        # Negotiation counts
+        # Negotiation counts & votes
         neg_sessions_count = len(state.negotiations)
         neg_rounds_count = sum(len(s.rounds) for s in state.negotiations)
+        
+        votes_cast = []
+        negotiations_data = []
+        final_negotiation_outcome = None
+        if state.negotiations:
+            latest_s = state.negotiations[-1]
+            if latest_s.outcome:
+                final_negotiation_outcome = latest_s.outcome.model_dump() if hasattr(latest_s.outcome, "model_dump") else latest_s.outcome
+            for s in state.negotiations:
+                if hasattr(s, "model_dump"):
+                    negotiations_data.append(s.model_dump())
+                for r in s.rounds:
+                    votes_iterable = r.votes.values() if isinstance(r.votes, dict) else r.votes
+                    for v in votes_iterable:
+                        if hasattr(v, "model_dump"):
+                            votes_cast.append(v.model_dump())
+                        elif isinstance(v, dict):
+                            votes_cast.append(v)
+
+        decisions_data = [d.model_dump() if hasattr(d, "model_dump") else d for d in state.decisions]
+        events_data = [e.model_dump() if hasattr(e, "model_dump") else e for e in state.event_history]
+        proposals_data = [p.model_dump() if hasattr(p, "model_dump") else p for p in state.proposals]
+        country_states_data = {
+            cid: (cs.model_dump() if hasattr(cs, "model_dump") else cs)
+            for cid, cs in state.countries.items()
+        }
+        final_crisis_data = state.crisis_state.model_dump() if hasattr(state.crisis_state, "model_dump") else None
 
         return ScoringInputSnapshot(
             simulation_id=sim_id,
             scenario_id=scenario_id,
             mode=mode,
             start_tick=detection_tick,
+            initial_tick=0,
             final_tick=final_tick,
             simulation_status=state.status,
             crisis_phase=state.crisis_state.phase,
@@ -174,4 +202,17 @@ class ScoringSnapshotBuilder:
             final_agreement_reached=final_agreement_reached,
             final_negotiation_status=final_negotiation_status,
             unresolved_issues_raw=unresolved_issues_raw,
+            proposal_versions_count=len(state.proposals),
+            votes_count=len(votes_cast),
+            events_count=len(state.event_history),
+            decisions_count=len(state.decisions),
+            scenario_baseline_risk=100.0,
+            final_crisis_state=final_crisis_data,
+            country_states=country_states_data,
+            negotiation_sessions=negotiations_data if negotiations_data else None,
+            final_negotiation_outcome=final_negotiation_outcome,
+            proposal_versions=proposals_data if proposals_data else None,
+            votes=votes_cast if votes_cast else None,
+            events=events_data if events_data else None,
+            decisions=decisions_data if decisions_data else None,
         )

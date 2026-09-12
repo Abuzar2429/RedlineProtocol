@@ -46,12 +46,27 @@ class DeterministicScoringEngine:
         Pure evaluation of a ScoringInputSnapshot.
         Guaranteed to produce identical results for identical snapshots.
         """
+        logger.info(
+            "Scoring started for simulation [%s] (mode=%s, tick=%d)",
+            snapshot.simulation_id,
+            snapshot.mode,
+            snapshot.final_tick,
+        )
+
+        if not snapshot.simulation_id:
+            logger.error("Scoring validation failure: simulation_id is empty")
+            raise ValueError("ScoringInputSnapshot simulation_id cannot be empty")
+        if snapshot.total_countries < 0:
+            logger.error("Scoring validation failure: total_countries is negative (%d)", snapshot.total_countries)
+            raise ValueError("ScoringInputSnapshot total_countries cannot be negative")
+
         # 1. Metric 3 first: Coordination Ratio (needed as multiplier for Metric 1)
         approving_count = len(snapshot.approving_countries)
         coord_ratio, metric_coordination = compute_coordination_score(
             approving_count=approving_count,
             total_countries=snapshot.total_countries,
         )
+        logger.debug("Metric calculated: Coordination = %s (%.2f)", metric_coordination.display_value, coord_ratio)
 
         # 2. Metric 1: Risk Reduction & Final Risk
         risk_final, risk_reduction_pct, metric_risk = compute_risk_score(
@@ -59,6 +74,7 @@ class DeterministicScoringEngine:
             coordination_ratio=coord_ratio,
             custom_reductions=snapshot.action_risk_reductions,
         )
+        logger.debug("Metric calculated: Risk Reduction = %s (final=%.1f)", metric_risk.display_value, risk_final)
 
         # 3. Metric 2: Response Time
         response_time_min, metric_response = compute_response_time(
@@ -66,12 +82,14 @@ class DeterministicScoringEngine:
             coordinated_action_tick=snapshot.coordinated_action_tick,
             final_tick=snapshot.final_tick,
         )
+        logger.debug("Metric calculated: Response Time = %s", metric_response.display_value)
 
         # 4. Metric 4: Unresolved Issues
         unresolved_issues, unresolved_count, metric_unresolved = extract_and_score_unresolved_issues(
             unresolved_issues_raw=snapshot.unresolved_issues_raw,
             negotiation_rounds_count=snapshot.negotiation_rounds_count,
         )
+        logger.debug("Metric calculated: Unresolved Issues = %s", metric_unresolved.display_value)
 
         # 5. Assemble Metric Results
         metric_breakdown: List[MetricResult] = [
@@ -103,7 +121,7 @@ class DeterministicScoringEngine:
         scoring_id = f"score_{uuid.uuid4().hex[:12]}"
 
         logger.info(
-            "Scored simulation [%s] mode=%s overall=%.2f grade=%s risk_final=%.1f resp_time=%dm coord=%.2f",
+            "Scoring completed for simulation [%s] mode=%s overall=%.2f grade=%s risk_final=%.1f resp_time=%dm coord=%.2f",
             snapshot.simulation_id,
             snapshot.mode,
             overall_score,

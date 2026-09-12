@@ -77,6 +77,20 @@ class ScoringInputSnapshot(BaseModel):
     final_agreement_reached: bool = Field(False, description="Whether final negotiation agreement was achieved")
     final_negotiation_status: Optional[str] = Field(None, description="Terminal status of latest negotiation")
     unresolved_issues_raw: List[str] = Field(default_factory=list, description="Unfiltered candidate issues from negotiation")
+    proposal_versions_count: int = Field(0, ge=0, description="Total proposal versions evaluated")
+    initial_tick: int = Field(0, ge=0, description="Initial tick baseline")
+    votes_count: int = Field(0, ge=0, description="Total votes cast across negotiation rounds")
+    events_count: int = Field(0, ge=0, description="Total events recorded in event history")
+    decisions_count: int = Field(0, ge=0, description="Total decisions made across countries")
+    scenario_baseline_risk: float = Field(100.0, description="Baseline initial crisis risk")
+    final_crisis_state: Optional[Dict[str, Any]] = Field(None, description="Snapshot of operational crisis state")
+    country_states: Optional[Dict[str, Dict[str, Any]]] = Field(None, description="Snapshot of country states")
+    negotiation_sessions: Optional[List[Dict[str, Any]]] = Field(None, description="Snapshot of negotiation sessions")
+    final_negotiation_outcome: Optional[Dict[str, Any]] = Field(None, description="Snapshot of final negotiation outcome")
+    proposal_versions: Optional[List[Dict[str, Any]]] = Field(None, description="Snapshot of proposal versions")
+    votes: Optional[List[Dict[str, Any]]] = Field(None, description="Snapshot of votes cast")
+    events: Optional[List[Dict[str, Any]]] = Field(None, description="Snapshot of timeline events")
+    decisions: Optional[List[Dict[str, Any]]] = Field(None, description="Snapshot of country decision records")
 
 
 class ScoringResult(BaseModel):
