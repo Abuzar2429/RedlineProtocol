@@ -1,0 +1,20 @@
+# ── Web framework ────────────────────────────────────────────────────────────
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+
+# ── Configuration ────────────────────────────────────────────────────────────
+pydantic==2.8.2
+pydantic-settings==2.4.0
+
+# ── Database ─────────────────────────────────────────────────────────────────
+sqlalchemy==2.0.35
+asyncpg==0.29.0          # async PostgreSQL driver
+alembic==1.13.3          # database migrations (Phase 2+)
+
+# ── Testing ──────────────────────────────────────────────────────────────────
+pytest==8.3.3
+pytest-asyncio==0.24.0
+httpx==0.27.2            # async test client for FastAPI
+
+# ── Utilities ────────────────────────────────────────────────────────────────
+python-dotenv==1.0.1     # .env file loading (pydantic-settings uses this)

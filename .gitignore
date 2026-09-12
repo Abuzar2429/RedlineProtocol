@@ -1,0 +1,62 @@
+# ────────────────────────────────────────────────────────────────────────────
+# AI Governance Crisis Simulator — .gitignore
+# ────────────────────────────────────────────────────────────────────────────
+
+# ── Environment / secrets ────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+*.egg
+*.whl
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+*.log
+
+# ── Node / Frontend ──────────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+.cache/
+*.local
+
+# ── IDE / OS ─────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Docker ───────────────────────────────────────────────────────────────────
+# (keep docker-compose.yml but ignore override files with local secrets)
+docker-compose.override.yml
+
+# ── Database ─────────────────────────────────────────────────────────────────
+*.sqlite
+*.db
+
+# ── Chroma (Phase 7+) ────────────────────────────────────────────────────────
+chroma_data/
+
+# ── Misc ─────────────────────────────────────────────────────────────────────
+*.bak
+*.tmp
