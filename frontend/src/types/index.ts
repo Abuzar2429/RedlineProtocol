@@ -6,3 +6,4 @@ export * from './simulation';
 export * from './events';
 export * from './api';
 export * from './comparison';
+export * from './demo';

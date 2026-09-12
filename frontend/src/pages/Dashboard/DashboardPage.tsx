@@ -269,6 +269,29 @@ export const DashboardPage: React.FC = () => {
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
+
+            {/* Phase 14 Seeded Demo & Replay Center Banner */}
+            <div className="rounded-xl border border-purple-500/40 bg-gradient-to-r from-purple-950/20 via-slate-900 to-slate-950 p-4 flex items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-purple-400 uppercase">
+                  <Radio className="w-3.5 h-3.5" />
+                  <span>Phase 14 Presentation System</span>
+                </div>
+                <h3 className="text-sm font-bold text-slate-100 mt-0.5">
+                  Seeded Demo & Authoritative Replay Center
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  100% reproducible offline seeded simulation, fallback verification, and timeline scrubbing without re-running LLMs.
+                </p>
+              </div>
+              <button
+                onClick={() => navigate('/demo')}
+                className="shrink-0 flex items-center gap-1 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs font-mono transition-colors shadow-md shadow-purple-950/40"
+              >
+                <span>Launch Demo</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 

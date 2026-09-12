@@ -48,6 +48,13 @@ class Settings(BaseSettings):
     RAG_CHUNK_SIZE: int = 500              # tokens
     RAG_CHUNK_OVERLAP: int = 50            # tokens
 
+    # ── Demo & Replay Configuration — Phase 14 ────────────────────────────────
+    APP_MODE: str = "LIVE"                  # "LIVE" | "DEMO" | "REPLAY"
+    DEMO_SEED: int = 42
+    DEMO_SCENARIO_ID: str = "scenario_01"
+    DEMO_DETERMINISTIC: bool = True
+    LLM_REQUIRED_FOR_DEMO: bool = False
+
     # ── Misc ─────────────────────────────────────────────────────────────────
     LOG_LEVEL: str = "INFO"
 

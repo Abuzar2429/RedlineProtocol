@@ -6,6 +6,7 @@ from app.api.routes.scoring import router as scoring_router
 from app.api.routes.websocket import router as websocket_router
 from app.api.routes.rag import router as rag_router
 from app.api.routes.comparisons import router as comparisons_router
+from app.api.routes.demo import router as demo_router
 
 __all__ = [
     "countries_router",
@@ -16,5 +17,6 @@ __all__ = [
     "websocket_router",
     "rag_router",
     "comparisons_router",
+    "demo_router",
 ]
 

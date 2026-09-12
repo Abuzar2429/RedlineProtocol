@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Radio, Cpu, BookOpen, ChevronLeft, ChevronRight, Scale } from 'lucide-react';
+import { LayoutDashboard, Radio, Cpu, BookOpen, ChevronLeft, ChevronRight, Scale, PlaySquare } from 'lucide-react';
 import { useUIStore } from '../../stores/uiStore';
 import { useSimulationStore } from '../../stores/simulationStore';
 
@@ -29,6 +29,13 @@ export const Sidebar: React.FC = () => {
       icon: Scale,
       badge: 'P13',
       badgeColor: 'bg-amber-950 text-amber-300 border-amber-800',
+    },
+    {
+      to: '/demo',
+      label: 'Demo & Replay Center',
+      icon: PlaySquare,
+      badge: 'P14',
+      badgeColor: 'bg-purple-950 text-purple-300 border-purple-800',
     },
   ];
 

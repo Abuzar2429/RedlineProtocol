@@ -116,6 +116,7 @@ def create_app() -> FastAPI:
         websocket_router,
         rag_router,
         comparisons_router,
+        demo_router,
     )
     app.include_router(countries_router)
     app.include_router(scenarios_router)
@@ -125,6 +126,7 @@ def create_app() -> FastAPI:
     app.include_router(websocket_router)
     app.include_router(rag_router)
     app.include_router(comparisons_router)
+    app.include_router(demo_router)
 
     return app
 

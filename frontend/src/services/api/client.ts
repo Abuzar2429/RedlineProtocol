@@ -272,6 +272,53 @@ export class ApiClient {
       method: 'POST',
     }, 60000);
   }
+
+  // ── Demo & Replays — Phase 14 ──────────────────────────────────────────────
+  launchDemo(data: import('../../types').DemoLaunchRequest = {}): Promise<import('../../types').DemoRun> {
+    return this.request<import('../../types').DemoRun>('/api/demo/launch', {
+      method: 'POST',
+      body: JSON.stringify({
+        scenario_id: data.scenario_id || 'scenario_01',
+        seed: data.seed ?? 42,
+        max_ticks: data.max_ticks ?? 60,
+        metadata: data.metadata || {},
+      }),
+    }, 60000);
+  }
+
+  listDemoRuns(): Promise<import('../../types').DemoRun[]> {
+    return this.request<import('../../types').DemoRun[]>('/api/demo/runs');
+  }
+
+  getDemoRun(id: string): Promise<import('../../types').DemoRun> {
+    return this.request<import('../../types').DemoRun>(`/api/demo/runs/${id}`);
+  }
+
+  restartDemo(id: string, newSeed?: number): Promise<import('../../types').DemoRun> {
+    const q = newSeed !== undefined ? `?new_seed=${newSeed}` : '';
+    return this.request<import('../../types').DemoRun>(`/api/demo/runs/${id}/restart${q}`, {
+      method: 'POST',
+    }, 60000);
+  }
+
+  createReplay(data: { source_type: 'simulation' | 'comparison'; source_id: string; seed?: number }): Promise<import('../../types').ReplaySession> {
+    return this.request<import('../../types').ReplaySession>('/api/replays', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  listReplays(): Promise<import('../../types').ReplaySession[]> {
+    return this.request<import('../../types').ReplaySession[]>('/api/replays');
+  }
+
+  getReplay(id: string): Promise<import('../../types').ReplaySession> {
+    return this.request<import('../../types').ReplaySession>(`/api/replays/${id}`);
+  }
+
+  seekReplay(id: string, toTick: number): Promise<import('../../types').ReplayStateSnapshot> {
+    return this.request<import('../../types').ReplayStateSnapshot>(`/api/replays/${id}/seek?to_tick=${toTick}`);
+  }
 }
 
 export const apiClient = new ApiClient();
