@@ -14,6 +14,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 from app.schemas.scoring_models import MetricResult, ScoringResult, SimulationMetrics
 from app.scoring import default_scoring_engine, default_scoring_repository
 from app.services.simulation.repository import default_simulation_repository
+from app.services.websocket_manager import default_websocket_manager
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,19 @@ async def score_simulation(
     try:
         score_result = default_scoring_engine.evaluate_state(engine.state)
         default_scoring_repository.save(score_result)
+        await default_websocket_manager.broadcast_event(
+            simulation_id=simulation_id,
+            event_type="SCORING_COMPLETED",
+            payload={
+                "scoring_id": score_result.scoring_id,
+                "overall_score": score_result.overall_score,
+                "score_grade": score_result.score_grade,
+                "performance_headline": score_result.performance_headline,
+            },
+            tick=score_result.calculated_at_tick,
+            timestamp=f"T+{score_result.calculated_at_tick:02d}",
+            category="metrics",
+        )
         return score_result
     except HTTPException:
         raise

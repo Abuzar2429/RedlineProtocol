@@ -15,6 +15,7 @@ from app.schemas.negotiation_models import (
     VoteType,
 )
 from app.services.simulation.repository import default_simulation_repository
+from app.services.websocket_manager import default_websocket_manager
 
 router = APIRouter(prefix="/api/simulations", tags=["negotiations"])
 
@@ -79,8 +80,55 @@ async def run_negotiation(
             proposal=proposal,
             max_rounds=max_rounds,
         )
+        active_prop_id = proposal.proposal_id if proposal else (
+            session.proposal_versions[0].proposal_id if session.proposal_versions else "unknown"
+        )
+        await default_websocket_manager.broadcast_event(
+            simulation_id=simulation_id,
+            event_type="NEGOTIATION_STARTED",
+            payload={"session_id": session.negotiation_id, "proposal_id": active_prop_id},
+            tick=engine.state.current_tick,
+            timestamp=engine.state.current_time,
+            category="negotiation",
+        )
         outcome = default_negotiation_service.run_full_negotiation(session, engine.state)
         engine.state.negotiations.append(session)
+
+        for r in session.rounds:
+            v_res = r.voting_result
+            r_tick = r.completed_at_tick if r.completed_at_tick is not None else r.started_at_tick
+            await default_websocket_manager.broadcast_event(
+                simulation_id=simulation_id,
+                event_type="NEGOTIATION_ROUND_COMPLETED",
+                payload={
+                    "session_id": session.negotiation_id,
+                    "round_number": r.round_number,
+                    "approvals": v_res.votes_for if v_res else 0,
+                    "rejections": v_res.votes_against if v_res else 0,
+                    "undecided": v_res.abstentions if v_res else 0,
+                    "passed": v_res.passed if v_res else False,
+                },
+                tick=r_tick,
+                timestamp=f"T+{r_tick:02d}",
+                category="negotiation",
+            )
+
+        coord_ratio = len(outcome.supporting_countries) / max(1, len(engine.state.countries))
+        await default_websocket_manager.broadcast_event(
+            simulation_id=simulation_id,
+            event_type="NEGOTIATION_OUTCOME",
+            payload={
+                "session_id": session.negotiation_id,
+                "agreement_reached": outcome.agreement_reached,
+                "final_status": outcome.final_status,
+                "coordination_score": round(coord_ratio, 2),
+                "supporting_countries": outcome.supporting_countries,
+                "unresolved_issues": outcome.unresolved_issues,
+            },
+            tick=engine.state.current_tick,
+            timestamp=engine.state.current_time,
+            category="negotiation",
+        )
         return outcome
     except Exception as exc:
         raise HTTPException(
@@ -142,6 +190,38 @@ async def advance_negotiation_round(simulation_id: str, negotiation_id: str) -> 
         )
     try:
         round_rec = default_negotiation_service.execute_round(target_session, engine.state)
+        v_res = round_rec.voting_result
+        r_tick = round_rec.completed_at_tick if round_rec.completed_at_tick is not None else round_rec.started_at_tick
+        await default_websocket_manager.broadcast_event(
+            simulation_id=simulation_id,
+            event_type="NEGOTIATION_ROUND_COMPLETED",
+            payload={
+                "session_id": target_session.negotiation_id,
+                "round_number": round_rec.round_number,
+                "approvals": v_res.votes_for if v_res else 0,
+                "rejections": v_res.votes_against if v_res else 0,
+                "undecided": v_res.abstentions if v_res else 0,
+                "passed": v_res.passed if v_res else False,
+            },
+            tick=r_tick,
+            timestamp=f"T+{r_tick:02d}",
+            category="negotiation",
+        )
+        if target_session.outcome:
+            await default_websocket_manager.broadcast_event(
+                simulation_id=simulation_id,
+                event_type="NEGOTIATION_OUTCOME",
+                payload={
+                    "session_id": target_session.negotiation_id,
+                    "agreement_reached": target_session.outcome.agreement_reached,
+                    "final_status": target_session.outcome.final_status,
+                    "coordination_score": round(len(target_session.outcome.supporting_countries) / max(1, len(engine.state.countries)), 2),
+                    "supporting_countries": target_session.outcome.supporting_countries,
+                },
+                tick=engine.state.current_tick,
+                timestamp=engine.state.current_time,
+                category="negotiation",
+            )
         return round_rec
     except Exception as exc:
         raise HTTPException(

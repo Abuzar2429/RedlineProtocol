@@ -60,6 +60,13 @@ from app.schemas.scoring_models import (
     ScoringInputSnapshot,
     ScoringResult,
 )
+from app.schemas.websocket_models import (
+    PublicCountryState,
+    SimulationSnapshotPayload,
+    WebSocketClientMessage,
+    WebSocketEventEnvelope,
+    WebSocketEventType,
+)
 
 __all__ = [
     "RootResponse",
@@ -100,5 +107,10 @@ __all__ = [
     "SimulationMetrics",
     "ScoringInputSnapshot",
     "ScoringResult",
+    "PublicCountryState",
+    "SimulationSnapshotPayload",
+    "WebSocketClientMessage",
+    "WebSocketEventEnvelope",
+    "WebSocketEventType",
 ]
 
