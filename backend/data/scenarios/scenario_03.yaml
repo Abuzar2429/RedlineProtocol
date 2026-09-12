@@ -1,0 +1,107 @@
+id: "scenario_03"
+scenario_id: "crisis_003"
+title: "AI-Enabled Financial Market Manipulation & Strategic Sabotage"
+description: "A coordinated swarm of autonomous speculative trading agents operating through offshore shell funds in Pelagia and Fenwick executes a multi-trillion dollar predatory flash-squeeze on sovereign debt bonds and energy futures across 12 nations, threatening currency collapses and hyperinflation."
+severity: "high"
+severity_score: 0.84
+
+affected_countries:
+  - "country_01"
+  - "country_02"
+  - "country_04"
+  - "country_06"
+  - "country_07"
+  - "country_08"
+  - "country_09"
+  - "country_10"
+  - "country_11"
+  - "country_12"
+  - "country_14"
+  - "country_15"
+
+origin_country: "country_06"
+
+information_delay:
+  country_06: 0
+  country_15: 1
+  country_01: 3
+  country_02: 4
+  country_07: 5
+  country_04: 6
+  country_12: 7
+  country_10: 9
+  country_11: 10
+  country_09: 11
+  country_08: 13
+  country_14: 16
+
+timeline:
+  - time_offset: 0
+    event: "Fenwick and Pelagia exchange order books detect high-frequency algorithmic liquidity drainage in energy swaps."
+    type: "detection"
+  - time_offset: 3
+    event: "Sovereign debt yield spreads for Hesperia and Lucania spike 450 basis points in under 90 seconds."
+    type: "escalation"
+  - time_offset: 6
+    event: "Alerion Federal Reserve and Continental Central Bank trigger coordinated emergency liquidity injections."
+    type: "spread"
+  - time_offset: 10
+    event: "Financial media exposes synthetic spoofing botnet operating via masked multi-cloud IP endpoints."
+    type: "media"
+  - time_offset: 14
+    event: "Danuvia cyber intelligence traces root agent orchestration keys to clandestine servers in Oakhaven."
+    type: "escalation"
+  - time_offset: 18
+    event: "Emergency G12 monetary task force demands instantaneous shutdown of high-frequency dark liquidity pools."
+    type: "diplomatic"
+  - time_offset: 24
+    event: "Fenwick, Pelagia, and Lucania enforce global algorithmic trading circuit-breaker and freeze illicit clearing accounts."
+    type: "resolution"
+
+initial_evidence_completeness: 0.30
+evidence_grows_at: 0.02
+
+potential_impacts:
+  - "financial_markets"
+  - "economic_stability"
+  - "currency_valuation"
+  - "public_trust"
+  - "national_security"
+
+available_actions:
+  - id: "impose_unilateral_capital_controls"
+    label: "Impose Unilateral Foreign Exchange and Algorithmic Capital Controls"
+    risk_reduction_value: -15.0
+    coordination_effect: -0.20
+    requires_agreement: false
+    visibility: "public"
+  - id: "freeze_offshore_trading_nodes"
+    label: "Execute Coordinated Asset Freeze on Suspicious Trading Nodes"
+    risk_reduction_value: -25.0
+    coordination_effect: 0.35
+    requires_agreement: true
+    visibility: "public"
+  - id: "deploy_counter_algorithmic_stabilizers"
+    label: "Activate Central Bank Autonomous Market Stabilization Agents"
+    risk_reduction_value: -18.0
+    coordination_effect: 0.15
+    requires_agreement: false
+    visibility: "public"
+  - id: "subpoena_broker_telemetry"
+    label: "Subpoena Algorithmic Transaction Telemetry and Model Source Checkpoints"
+    risk_reduction_value: -10.0
+    coordination_effect: 0.25
+    requires_agreement: false
+    visibility: "bilateral"
+  - id: "enact_multilateral_circuit_breaker"
+    label: "Enact Global 48-Hour Algorithmic Trading Moratorium"
+    risk_reduction_value: -30.0
+    coordination_effect: 0.45
+    requires_agreement: true
+    visibility: "public"
+
+governance_docs_relevant:
+  - "emergency_procedures"
+  - "liability_frameworks"
+  - "incident_response"
+  - "data_sharing_protocols"

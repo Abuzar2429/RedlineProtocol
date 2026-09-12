@@ -1,0 +1,35 @@
+{
+  "total_count": 3,
+  "scenarios": [
+    {
+      "id": "scenario_01",
+      "scenario_id": "crisis_001",
+      "title": "Cross-Border AI Infrastructure Failure",
+      "severity": "critical",
+      "severity_score": 0.91,
+      "affected_count": 15,
+      "origin_country": "country_01",
+      "file": "scenario_01.yaml"
+    },
+    {
+      "id": "scenario_02",
+      "scenario_id": "crisis_002",
+      "title": "Autonomous Decision System Discrimination & Algorithmic Contagion",
+      "severity": "high",
+      "severity_score": 0.78,
+      "affected_count": 10,
+      "origin_country": "country_03",
+      "file": "scenario_02.yaml"
+    },
+    {
+      "id": "scenario_03",
+      "scenario_id": "crisis_003",
+      "title": "AI-Enabled Financial Market Manipulation & Strategic Sabotage",
+      "severity": "high",
+      "severity_score": 0.84,
+      "affected_count": 12,
+      "origin_country": "country_06",
+      "file": "scenario_03.yaml"
+    }
+  ]
+}

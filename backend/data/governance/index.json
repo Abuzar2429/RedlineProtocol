@@ -1,0 +1,41 @@
+{
+  "total_count": 6,
+  "documents": [
+    {
+      "doc_id": "ai_principles",
+      "title": "Multilateral Accord on Artificial Intelligence Principles and Safety Baselines",
+      "category": "principles",
+      "file": "ai_principles.md"
+    },
+    {
+      "doc_id": "incident_response",
+      "title": "Multilateral AI Incident Response Framework and Emergency Notification Protocol",
+      "category": "response",
+      "file": "incident_response.md"
+    },
+    {
+      "doc_id": "international_cooperation",
+      "title": "Multilateral AI Safety Coordination and Verification Treaty",
+      "category": "cooperation",
+      "file": "international_cooperation.md"
+    },
+    {
+      "doc_id": "data_sharing_protocols",
+      "title": "Cross-Border AI Telemetry and Forensic Data Sharing Agreement",
+      "category": "data_sharing",
+      "file": "data_sharing_protocols.md"
+    },
+    {
+      "doc_id": "emergency_procedures",
+      "title": "Emergency AI System Containment and Interruption Protocols",
+      "category": "emergency",
+      "file": "emergency_procedures.md"
+    },
+    {
+      "doc_id": "liability_frameworks",
+      "title": "Transnational AI Harm Attribution and Liability Framework",
+      "category": "liability",
+      "file": "liability_frameworks.md"
+    }
+  ]
+}

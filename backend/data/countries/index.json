@@ -1,0 +1,110 @@
+{
+  "total_count": 15,
+  "countries": [
+    {
+      "id": "country_01",
+      "name": "Federal Republic of Alerion",
+      "region": "Boreal Alliance / Northern Continent",
+      "geopolitical_bloc": "bloc_a",
+      "file": "country_01.json"
+    },
+    {
+      "id": "country_02",
+      "name": "Kingdom of Bavari",
+      "region": "Central Continent / Continental Union",
+      "geopolitical_bloc": "bloc_b",
+      "file": "country_02.json"
+    },
+    {
+      "id": "country_03",
+      "name": "Republic of Coris",
+      "region": "Eastern Continent / Orient Pact",
+      "geopolitical_bloc": "bloc_c",
+      "file": "country_03.json"
+    },
+    {
+      "id": "country_04",
+      "name": "Federation of Danuvia",
+      "region": "Northern Archipelago / Boreal Alliance",
+      "geopolitical_bloc": "bloc_a",
+      "file": "country_04.json"
+    },
+    {
+      "id": "country_05",
+      "name": "Elysian Union",
+      "region": "Northern Rim / Boreal League",
+      "geopolitical_bloc": "bloc_b",
+      "file": "country_05.json"
+    },
+    {
+      "id": "country_06",
+      "name": "State of Fenwick",
+      "region": "Maritime Strait / Central Island",
+      "geopolitical_bloc": "bloc_a",
+      "file": "country_06.json"
+    },
+    {
+      "id": "country_07",
+      "name": "Commonwealth of Gallia",
+      "region": "Western Peninsula / Continental Union",
+      "geopolitical_bloc": "bloc_a",
+      "file": "country_07.json"
+    },
+    {
+      "id": "country_08",
+      "name": "United Hesperia",
+      "region": "Southern Hemisphere / Equatorial Basin",
+      "geopolitical_bloc": "global_south_coalition",
+      "file": "country_08.json"
+    },
+    {
+      "id": "country_09",
+      "name": "Illyrian Republic",
+      "region": "Pelagic Ocean / Island Arc",
+      "geopolitical_bloc": "maritime_neutral",
+      "file": "country_09.json"
+    },
+    {
+      "id": "country_10",
+      "name": "Jovian Confederation",
+      "region": "Alpine Central / Non-Aligned Zone",
+      "geopolitical_bloc": "neutral",
+      "file": "country_10.json"
+    },
+    {
+      "id": "country_11",
+      "name": "Kalmar Republic",
+      "region": "Polar Fjords / Arctic Shield",
+      "geopolitical_bloc": "bloc_b",
+      "file": "country_11.json"
+    },
+    {
+      "id": "country_12",
+      "name": "Maritime Union of Lucania",
+      "region": "Pelagic Crossroad / Southern Isthmus",
+      "geopolitical_bloc": "maritime_neutral",
+      "file": "country_12.json"
+    },
+    {
+      "id": "country_13",
+      "name": "Novaria Sovereign State",
+      "region": "Savanna Plains / Interior Basin",
+      "geopolitical_bloc": "global_south_coalition",
+      "file": "country_13.json"
+    },
+    {
+      "id": "country_14",
+      "name": "Republic of Oakhaven",
+      "region": "Steppe Frontier / Inland Union",
+      "geopolitical_bloc": "bloc_c",
+      "file": "country_14.json"
+    },
+    {
+      "id": "country_15",
+      "name": "Principality of Pelagia",
+      "region": "Pelagic Archipelago / Sovereign Atolls",
+      "geopolitical_bloc": "maritime_neutral",
+      "file": "country_15.json"
+    }
+  ]
+}

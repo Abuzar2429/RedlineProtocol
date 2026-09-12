@@ -1,0 +1,103 @@
+id: "scenario_02"
+scenario_id: "crisis_002"
+title: "Autonomous Decision System Discrimination & Algorithmic Contagion"
+description: "A widely exported predictive border-control and visa-processing AI system developed in Coris exhibits severe demographic bias and automated blacklisting across 10 signatory nations, triggering diplomatic fallout, mass citizen detentions, and mutual recriminations regarding algorithmic verification access."
+severity: "high"
+severity_score: 0.78
+
+affected_countries:
+  - "country_01"
+  - "country_02"
+  - "country_03"
+  - "country_05"
+  - "country_07"
+  - "country_08"
+  - "country_10"
+  - "country_11"
+  - "country_13"
+  - "country_14"
+
+origin_country: "country_03"
+
+information_delay:
+  country_03: 0
+  country_14: 2
+  country_08: 5
+  country_13: 6
+  country_02: 8
+  country_05: 8
+  country_07: 10
+  country_10: 12
+  country_01: 14
+  country_11: 15
+
+timeline:
+  - time_offset: 0
+    event: "Internal Coris civil aviation audit flags anomalous false-positive terror flagging in export Model Aegis-7."
+    type: "detection"
+  - time_offset: 4
+    event: "Citizens from Hesperia and Novaria traveling through Bavari transit hubs are wrongfully detained by automated gates."
+    type: "spread"
+  - time_offset: 7
+    event: "Elysian civil liberties watchdog leaks algorithmic bias benchmark proving 82% discriminatory variance."
+    type: "media"
+  - time_offset: 11
+    event: "Bavari and Elysia issue joint ultimatum demanding source code inspection and emergency suspension."
+    type: "diplomatic"
+  - time_offset: 15
+    event: "Coris state media rejects external inspection demands, citing proprietary defense secrets and national sovereignty."
+    type: "escalation"
+  - time_offset: 19
+    event: "Jovian Confederation convenes neutral technical mediation panel in international arbitration chambers."
+    type: "diplomatic"
+  - time_offset: 26
+    event: "Parties negotiate zero-knowledge cryptographic audit protocol to verify bias mitigation without code disclosure."
+    type: "resolution"
+
+initial_evidence_completeness: 0.35
+evidence_grows_at: 0.025
+
+potential_impacts:
+  - "human_rights"
+  - "diplomatic_relations"
+  - "cross_border_travel"
+  - "public_trust"
+  - "national_sovereignty"
+
+available_actions:
+  - id: "deny_and_suppress"
+    label: "Dismiss Findings as Coordinated Geopolitical Disinformation"
+    risk_reduction_value: 15.0
+    coordination_effect: -0.40
+    requires_agreement: false
+    visibility: "public"
+  - id: "suspend_border_algorithms"
+    label: "Order Unilateral Reversion to Human-in-the-Loop Border Processing"
+    risk_reduction_value: -20.0
+    coordination_effect: 0.20
+    requires_agreement: false
+    visibility: "public"
+  - id: "request_zero_knowledge_audit"
+    label: "Propose Independent Zero-Knowledge Algorithmic Audit"
+    risk_reduction_value: -25.0
+    coordination_effect: 0.40
+    requires_agreement: true
+    visibility: "public"
+  - id: "impose_targeted_ai_sanctions"
+    label: "Impose Import Bans and Asset Freezes on System Vendors"
+    risk_reduction_value: -5.0
+    coordination_effect: -0.25
+    requires_agreement: false
+    visibility: "public"
+  - id: "establish_human_rights_monitoring"
+    label: "Deploy Multilateral Human Rights Observability Panel"
+    risk_reduction_value: -15.0
+    coordination_effect: 0.30
+    requires_agreement: true
+    visibility: "public"
+
+governance_docs_relevant:
+  - "ai_principles"
+  - "liability_frameworks"
+  - "international_cooperation"
+  - "data_sharing_protocols"

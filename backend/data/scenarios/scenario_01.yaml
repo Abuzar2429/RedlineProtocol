@@ -1,0 +1,134 @@
+id: "scenario_01"
+scenario_id: "crisis_001"
+title: "Cross-Border AI Infrastructure Failure"
+description: "A catastrophic recursive routing bug inside a next-generation autonomous grid-optimization foundation model causes cascading transmission failures across regional electrical interconnects, high-speed rail routing, and automated financial transaction clearing across 15 nations."
+severity: "critical"
+severity_score: 0.91
+
+affected_countries:
+  - "country_01"
+  - "country_02"
+  - "country_03"
+  - "country_04"
+  - "country_05"
+  - "country_06"
+  - "country_07"
+  - "country_08"
+  - "country_09"
+  - "country_10"
+  - "country_11"
+  - "country_12"
+  - "country_13"
+  - "country_14"
+  - "country_15"
+
+origin_country: "country_01"
+
+information_delay:
+  country_01: 0
+  country_04: 3
+  country_06: 4
+  country_07: 5
+  country_02: 5
+  country_11: 6
+  country_05: 7
+  country_12: 8
+  country_09: 8
+  country_10: 9
+  country_15: 10
+  country_08: 12
+  country_13: 13
+  country_03: 15
+  country_14: 18
+
+timeline:
+  - time_offset: 0
+    event: "Autonomous power optimization model at Alerion Northern Grid initiates recursive desynchronization cycle."
+    type: "detection"
+  - time_offset: 3
+    event: "Interconnect relays into Danuvia and Fenwick trip off-line; high-speed transit signaling freezes."
+    type: "spread"
+  - time_offset: 5
+    event: "Fenwick interbank clearing gateway triggers automatic emergency halt following corrupted settlement telemetry."
+    type: "escalation"
+  - time_offset: 8
+    event: "Global financial press reports widespread payment failures and rolling regional blackouts."
+    type: "media"
+  - time_offset: 10
+    event: "Alerion publishes preliminary incident telemetry and requests emergency coordination through multilateral channels."
+    type: "diplomatic"
+  - time_offset: 14
+    event: "Emergency multilateral summit opens; participating states deliberate collective circuit-breaker activation."
+    type: "diplomatic"
+  - time_offset: 20
+    event: "Bavari and Danuvia technical auditors verify isolated sandbox containment patch."
+    type: "resolution"
+  - time_offset: 25
+    event: "Consensus reached on coordinated staged grid restart and synchronized model weight rollback."
+    type: "resolution"
+
+initial_evidence_completeness: 0.40
+evidence_grows_at: 0.03
+
+potential_impacts:
+  - "infrastructure"
+  - "financial_markets"
+  - "public_services"
+  - "national_security"
+  - "public_trust"
+
+available_actions:
+  - id: "do_nothing"
+    label: "Do Nothing / Await Further Evidence"
+    risk_reduction_value: 0.0
+    coordination_effect: -0.1
+    requires_agreement: false
+    visibility: "private"
+  - id: "investigate_internally"
+    label: "Conduct Internal Sovereign Forensic Investigation"
+    risk_reduction_value: -5.0
+    coordination_effect: 0.0
+    requires_agreement: false
+    visibility: "private"
+  - id: "notify_affected"
+    label: "Issue Official Early Warning to Affected Neighboring States"
+    risk_reduction_value: -15.0
+    coordination_effect: 0.25
+    requires_agreement: false
+    visibility: "public"
+  - id: "suspend_ai_system"
+    label: "Execute Sovereign Emergency Circuit-Breaker / Suspend System"
+    risk_reduction_value: -25.0
+    coordination_effect: 0.15
+    requires_agreement: false
+    visibility: "public"
+  - id: "request_multilateral_audit"
+    label: "Request Joint Multilateral Technical Audit Team"
+    risk_reduction_value: -20.0
+    coordination_effect: 0.35
+    requires_agreement: true
+    visibility: "public"
+  - id: "share_technical_evidence"
+    label: "Share Unredacted System Telemetry and Model Execution Logs"
+    risk_reduction_value: -15.0
+    coordination_effect: 0.30
+    requires_agreement: false
+    visibility: "bilateral"
+  - id: "impose_temporary_restrictions"
+    label: "Impose Temporary Border Gateway Interruption and Firewall Isolation"
+    risk_reduction_value: -10.0
+    coordination_effect: -0.15
+    requires_agreement: false
+    visibility: "public"
+  - id: "ratify_joint_containment"
+    label: "Ratify Multilateral Joint Containment and Recovery Accord"
+    risk_reduction_value: -35.0
+    coordination_effect: 0.50
+    requires_agreement: true
+    visibility: "public"
+
+governance_docs_relevant:
+  - "emergency_procedures"
+  - "incident_response"
+  - "data_sharing_protocols"
+  - "international_cooperation"

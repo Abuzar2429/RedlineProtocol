@@ -88,6 +88,13 @@ def create_app() -> FastAPI:
         """
         return HealthResponse(status="healthy")
 
+    # Phase 2: Data layer read-only endpoints
+    # Phase 3: Simulation Engine endpoints
+    from app.api.routes import countries_router, scenarios_router, simulations_router
+    app.include_router(countries_router)
+    app.include_router(scenarios_router)
+    app.include_router(simulations_router)
+
     return app
 
 

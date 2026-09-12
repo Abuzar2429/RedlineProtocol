@@ -1,8 +1,16 @@
 """
-Pydantic schemas for the Phase 1 API responses.
-Simulation-specific schemas will be added in later phases.
+Pydantic schemas for API responses and Data Layer models.
 """
 from pydantic import BaseModel
+
+from app.schemas.data_models import (
+    CountryData,
+    ScenarioData,
+    TimelineEvent,
+    ScenarioAction,
+    GovernanceDocumentMetadata,
+    GovernanceDocument,
+)
 
 
 class RootResponse(BaseModel):
@@ -11,3 +19,40 @@ class RootResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str
+
+
+from app.schemas.simulation_models import (
+    CountrySimulationStatus,
+    CountrySimulationState,
+    CrisisOperationalState,
+    SimulationEventType,
+    SimulationEvent,
+    DecisionRecord,
+    SimulationStatus,
+    SimulationMode,
+    SimulationState,
+    CreateSimulationRequest,
+    SimulationStepResponse,
+)
+
+__all__ = [
+    "RootResponse",
+    "HealthResponse",
+    "CountryData",
+    "ScenarioData",
+    "TimelineEvent",
+    "ScenarioAction",
+    "GovernanceDocumentMetadata",
+    "GovernanceDocument",
+    "CountrySimulationStatus",
+    "CountrySimulationState",
+    "CrisisOperationalState",
+    "SimulationEventType",
+    "SimulationEvent",
+    "DecisionRecord",
+    "SimulationStatus",
+    "SimulationMode",
+    "SimulationState",
+    "CreateSimulationRequest",
+    "SimulationStepResponse",
+]
