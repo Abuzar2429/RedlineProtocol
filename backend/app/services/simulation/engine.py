@@ -10,7 +10,7 @@ Orchestrates the deterministic simulation lifecycle:
 """
 import logging
 import uuid
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from app.schemas.data_models import CountryData, ScenarioData
 from app.schemas.simulation_models import (
@@ -42,6 +42,7 @@ class SimulationEngine:
         mode: SimulationMode = "coordinated",
         simulation_id: Optional[str] = None,
         max_ticks: int = 120,
+        decision_service: Optional[Any] = None,
     ):
         self.scenario = scenario
         self.countries_map: Dict[str, CountryData] = {c.id: c for c in countries}
@@ -60,6 +61,7 @@ class SimulationEngine:
             scenario=self.scenario,
             countries_map=self.countries_map,
             event_queue=self.event_queue,
+            decision_service=decision_service,
         )
 
         # Build initial simulation state
@@ -77,6 +79,7 @@ class SimulationEngine:
         mode: SimulationMode = "coordinated",
         simulation_id: Optional[str] = None,
         max_ticks: int = 120,
+        decision_service: Optional[Any] = None,
     ) -> "SimulationEngine":
         """
         Factory method to initialize an engine using the Phase 2 DataLoader.
@@ -90,6 +93,7 @@ class SimulationEngine:
             mode=mode,
             simulation_id=simulation_id,
             max_ticks=max_ticks,
+            decision_service=decision_service,
         )
 
     # ── Initialization Helpers ────────────────────────────────────────────────

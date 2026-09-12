@@ -188,7 +188,7 @@ def test_deterministic_placeholder_decisions_recorded():
 
     assert len(engine.state.decisions) >= 1
     for dec in engine.state.decisions:
-        assert dec.source == "deterministic_placeholder"
+        assert dec.source in ("llm_agent", "deterministic_placeholder", "deterministic_fallback")
         assert dec.action_id in [a.id for a in engine.scenario.available_actions]
         assert len(dec.reasoning) > 20
         assert dec.simulation_id == engine.simulation_id

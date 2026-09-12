@@ -24,8 +24,14 @@ class Settings(BaseSettings):
     # ── CORS ─────────────────────────────────────────────────────────────────
     CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
 
-    # ── LLM (Anthropic) ──────────────────────────────────────────────────────
-    ANTHROPIC_API_KEY: str = ""
+    # ── LLM Configuration — Phase 4+ ──────────────────────────────────────────
+    LLM_PROVIDER: str = "mock"       # "mock" | "anthropic" | "openai"
+    LLM_MODEL: str = "claude-sonnet-4-6"
+    LLM_API_KEY: str = ""
+    ANTHROPIC_API_KEY: str = ""      # Alias / backwards compatibility
+    LLM_TEMPERATURE: float = 0.7
+    LLM_TIMEOUT: float = 30.0        # Seconds
+    LLM_MAX_RETRIES: int = 1
 
     # ── Misc ─────────────────────────────────────────────────────────────────
     LOG_LEVEL: str = "INFO"

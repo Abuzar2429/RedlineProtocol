@@ -9,7 +9,7 @@ Dispatches simulation events to dedicated typed handlers:
 """
 import logging
 import uuid
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from app.schemas.data_models import CountryData, ScenarioAction, ScenarioData
 from app.schemas.simulation_models import (
@@ -36,10 +36,16 @@ class EventProcessor:
         scenario: ScenarioData,
         countries_map: Dict[str, CountryData],
         event_queue: EventQueue,
+        decision_service: Optional[Any] = None,
     ):
         self.scenario = scenario
         self.countries_map = countries_map
         self.event_queue = event_queue
+        if decision_service is None:
+            from app.agents.decision_service import default_decision_service
+            self.decision_service = default_decision_service
+        else:
+            self.decision_service = decision_service
 
     def process_event(
         self,
@@ -231,14 +237,22 @@ class EventProcessor:
         if not country_data:
             return new_events
 
-        # Evaluate deterministic decision
-        decision = DeterministicDecisionMaker.evaluate_decision(
-            simulation_id=state.simulation_id,
-            country=country_data,
-            country_state=c_state,
-            available_actions=self.scenario.available_actions,
-            tick=event.tick,
-        )
+        # Evaluate decision via Country Agent decision service
+        if self.decision_service:
+            decision = self.decision_service.request_decision_sync(
+                country_id=cid,
+                state=state,
+                scenario=self.scenario,
+                tick=event.tick,
+            )
+        else:
+            decision = DeterministicDecisionMaker.evaluate_decision(
+                simulation_id=state.simulation_id,
+                country=country_data,
+                country_state=c_state,
+                available_actions=self.scenario.available_actions,
+                tick=event.tick,
+            )
 
         state.decisions.append(decision)
         c_state.decision_count += 1

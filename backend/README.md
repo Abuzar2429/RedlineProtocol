@@ -28,24 +28,48 @@ uvicorn app.main:app --reload
 
 The simulator uses a virtual event clock (`T+00`, `T+01`, ...) and a deterministic state machine to drive crises without requiring real-world time or external services.
 
-> **Note on AI Agents**: LLM agents are intentionally not part of Phase 3. The simulation core operates completely deterministically using rule-based placeholder decisions mapped to national strategic profiles. This proves the complete simulation lifecycle and state machine in a reproducible, testable environment before adding LLM agents in Phase 4.
+## Country Agents (Phase 4)
 
-### Core Lifecycle:
+Phase 4 introduces AI-powered decision-making for the 15 fictional countries while preserving the deterministic simulation engine.
+
 ```text
-Scenario Data
-     ↓
-Create Simulation (T+00)
-     ↓
-Information Asymmetry (gated by delay)
-     ↓
-Sequential Country State Progression:
-Unaware ──► Investigating ──► Notified ──► Coordinating
-     ↓
-Decision Point (Deterministic Policy Response)
-     ↓
-Action Execution & Operational Risk Deduction
-     ↓
-Resolution Accord / Simulation Complete
+                    Scenario
+                       ↓
+                Simulation Engine
+                       ↓
+                Decision Required
+                       ↓
+              ┌──────────────────┐
+              │  Country Agent   │
+              │      (LLM)       │
+              └────────┬─────────┘
+                       ↓
+                 Structured
+                   Decision
+                       ↓
+              Pydantic Validation
+                       ↓
+              Simulation Engine
+                       ↓
+                  State Update
+```
+
+- **Reusable Agent Architecture**: A single `CountryAgent` class parameterized by national profiles (`strategic_priorities`, `risk_tolerance`, `ai_policy_position`, etc.).
+- **Strict Information Boundary**: Agents receive only verified public information and their own local awareness state. Hidden future events or private deliberations of rival states are strictly filtered out.
+- **Provider Abstraction**: Supports `MockLLMProvider` (default, zero-cost, zero-key testing) and `AnthropicProvider` (live Claude model).
+- **Deterministic Fallback**: If an LLM call fails, times out, or produces invalid schema, the engine activates a deterministic fallback (`source = "deterministic_fallback"`), ensuring simulations never crash or stall.
+
+### LLM Configuration (.env)
+
+```bash
+# Provider choices: "mock" (default, zero-cost, no key needed) | "anthropic" | "openai"
+LLM_PROVIDER=mock
+LLM_MODEL=claude-sonnet-4-6
+LLM_API_KEY=your_key_here
+ANTHROPIC_API_KEY=your_key_here
+LLM_TEMPERATURE=0.7
+LLM_TIMEOUT=30.0
+LLM_MAX_RETRIES=1
 ```
 
 ## Endpoints

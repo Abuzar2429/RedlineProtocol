@@ -78,8 +78,16 @@ class DecisionRecord(BaseModel):
     label: str = Field(..., description="Action display label")
     reasoning: str = Field(..., description="Rationale justification")
     risks_noted: str = Field("", description="Anticipated risks noted in decision")
-    source: str = Field("deterministic_placeholder", description="Decision engine source")
+    source: str = Field("deterministic_placeholder", description="Decision engine source ('llm_agent' | 'deterministic_fallback' | 'deterministic_placeholder')")
     created_at_tick: int = Field(0, description="Tick when decision was scheduled")
+
+    # LLM provenance & metadata (Phase 4+)
+    provider: Optional[str] = Field(None, description="LLM provider name (e.g. anthropic, mock)")
+    model: Optional[str] = Field(None, description="Model identifier used for inference")
+    latency_ms: Optional[float] = Field(None, description="Inference latency in milliseconds")
+    willingness_to_coordinate: Optional[float] = Field(None, ge=0.0, le=1.0, description="Expressed coordination willingness")
+    expected_reactions: Optional[str] = Field(None, description="Anticipated diplomatic reactions")
+    prompt_version: Optional[str] = Field(None, description="Prompt version tag")
 
 
 class SimulationState(BaseModel):
