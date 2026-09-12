@@ -34,6 +34,13 @@ from app.schemas.simulation_models import (
     CreateSimulationRequest,
     SimulationStepResponse,
 )
+from app.schemas.coordinator_models import (
+    CoordinatorContext,
+    CoordinatorProposal,
+    CountryPositionSummary,
+    DeterministicAggregation,
+    PredictedVotes,
+)
 
 __all__ = [
     "RootResponse",
@@ -55,4 +62,9 @@ __all__ = [
     "SimulationState",
     "CreateSimulationRequest",
     "SimulationStepResponse",
+    "CoordinatorContext",
+    "CoordinatorProposal",
+    "CountryPositionSummary",
+    "DeterministicAggregation",
+    "PredictedVotes",
 ]

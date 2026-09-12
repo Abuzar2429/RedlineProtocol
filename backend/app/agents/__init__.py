@@ -14,6 +14,25 @@ from app.agents.decision_service import (
     default_decision_service,
 )
 
+from app.agents.coordinator_agent import CoordinatorAgent
+from app.agents.coordinator_context_builder import CoordinatorContextBuilder
+from app.agents.coordinator_models import (
+    CoordinatorContext,
+    CoordinatorProposal,
+    CountryPositionSummary,
+    DeterministicAggregation,
+    PredictedVotes,
+)
+from app.agents.coordinator_prompt import (
+    COORDINATOR_PROMPT_VERSION,
+    build_coordinator_system_prompt,
+    build_coordinator_user_prompt,
+)
+from app.agents.coordinator_service import (
+    CoordinatorService,
+    default_coordinator_service,
+)
+
 __all__ = [
     "CountryDecisionResponse",
     "DecisionContext",
@@ -24,4 +43,16 @@ __all__ = [
     "CountryAgent",
     "CountryDecisionService",
     "default_decision_service",
+    "CoordinatorAgent",
+    "CoordinatorContextBuilder",
+    "CoordinatorContext",
+    "CoordinatorProposal",
+    "CountryPositionSummary",
+    "DeterministicAggregation",
+    "PredictedVotes",
+    "COORDINATOR_PROMPT_VERSION",
+    "build_coordinator_system_prompt",
+    "build_coordinator_user_prompt",
+    "CoordinatorService",
+    "default_coordinator_service",
 ]

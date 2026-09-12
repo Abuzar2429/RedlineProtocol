@@ -43,6 +43,7 @@ class SimulationEngine:
         simulation_id: Optional[str] = None,
         max_ticks: int = 120,
         decision_service: Optional[Any] = None,
+        coordinator_service: Optional[Any] = None,
     ):
         self.scenario = scenario
         self.countries_map: Dict[str, CountryData] = {c.id: c for c in countries}
@@ -62,6 +63,7 @@ class SimulationEngine:
             countries_map=self.countries_map,
             event_queue=self.event_queue,
             decision_service=decision_service,
+            coordinator_service=coordinator_service,
         )
 
         # Build initial simulation state

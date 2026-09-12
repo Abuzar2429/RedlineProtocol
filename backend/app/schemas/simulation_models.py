@@ -9,6 +9,8 @@ Pydantic schemas for the Phase 3 Simulation Engine:
 from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field
 
+from app.schemas.coordinator_models import CoordinatorProposal
+
 
 # ── Status and Types ──────────────────────────────────────────────────────────
 
@@ -103,6 +105,7 @@ class SimulationState(BaseModel):
     active_events: List[SimulationEvent] = Field(default_factory=list, description="Events processed in current tick")
     pending_decisions: List[Dict[str, Any]] = Field(default_factory=list, description="Decisions awaiting execution")
     decisions: List[DecisionRecord] = Field(default_factory=list, description="Recorded decision ledger")
+    proposals: List[CoordinatorProposal] = Field(default_factory=list, description="International Coordinator proposals ledger")
     event_history: List[SimulationEvent] = Field(default_factory=list, description="Immutable full history log")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Session configuration metadata")
 

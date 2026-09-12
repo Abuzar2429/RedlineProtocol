@@ -53,6 +53,57 @@ class MockLLMProvider(LLMProvider):
                 parsed_json=None,
             )
 
+        # Check if this is an International Coordinator invocation
+        if "international coordinator" in system_prompt.lower() or "coordination task" in prompt.lower():
+            # Extract participating country IDs from the prompt
+            country_ids = re.findall(r"- Country:\s*[^\n\(]+\(([a-zA-Z0-9_-]+)\)", prompt)
+            if not country_ids:
+                country_ids = re.findall(r"country_[0-9]{2}", prompt)
+            if not country_ids:
+                country_ids = ["country_01", "country_02", "country_03", "country_04"]
+
+            # Sort deterministically
+            unique_countries = list(dict.fromkeys(country_ids))
+            half = max(1, len(unique_countries) // 2)
+            approving = unique_countries[:half]
+            opposing = unique_countries[half:half + 1] if len(unique_countries) > half else []
+            abstaining = unique_countries[half + 1:] if len(unique_countries) > half + 1 else []
+
+            data = {
+                "proposal_type": "JOINT_RESPONSE",
+                "title": "International AI Incident Containment Protocol",
+                "summary": "Coordinated multilateral protocol establishing joint technical verification and telemetry sharing.",
+                "items": [
+                    "Establish emergency cryptographic hotline for real-time model telemetry disclosure.",
+                    "Authorize neutral international safety inspection team for affected deployment clusters.",
+                    "Commit to temporary moratoria on retaliatory asymmetric cyber or regulatory counter-measures.",
+                ],
+                "rationale": "Balances urgent systemic containment against sovereign national security constraints.",
+                "predicted_votes": {
+                    "approve": approving,
+                    "oppose": opposing,
+                    "abstain": abstaining,
+                },
+                "unresolved_issues": [
+                    "Inspection protocol access boundaries and proprietary source code protection.",
+                    "Enforcement mechanisms for non-compliant algorithmic deployments.",
+                ],
+                "supporting_countries": approving,
+                "opposing_countries": opposing,
+                "confidence": 0.85,
+            }
+
+            latency_ms = (time.perf_counter() - start_time) * 1000.0
+            return LLMResult(
+                content=json.dumps(data, indent=2),
+                provider="mock",
+                model=self.model,
+                latency_ms=max(1.0, latency_ms),
+                parsed_json=data,
+                prompt_tokens=220,
+                completion_tokens=140,
+            )
+
         # Extract country name and available action IDs from the prompt
         country_match = re.search(r"Country:\s*([^\n\r]+)", prompt)
         country_name = country_match.group(1).strip() if country_match else "Sovereign State"

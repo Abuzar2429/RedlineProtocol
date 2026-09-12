@@ -37,6 +37,7 @@ class EventProcessor:
         countries_map: Dict[str, CountryData],
         event_queue: EventQueue,
         decision_service: Optional[Any] = None,
+        coordinator_service: Optional[Any] = None,
     ):
         self.scenario = scenario
         self.countries_map = countries_map
@@ -46,6 +47,12 @@ class EventProcessor:
             self.decision_service = default_decision_service
         else:
             self.decision_service = decision_service
+
+        if coordinator_service is None:
+            from app.agents.coordinator_service import default_coordinator_service
+            self.coordinator_service = default_coordinator_service
+        else:
+            self.coordinator_service = coordinator_service
 
     def process_event(
         self,
@@ -370,6 +377,25 @@ class EventProcessor:
         self, event: SimulationEvent, state: SimulationState
     ) -> List[SimulationEvent]:
         state.crisis_state.phase = "NEGOTIATION"
+        if state.mode in ("coordinated", "partial") and self.coordinator_service:
+            try:
+                round_idx = len(state.proposals) + 1
+                proposal = self.coordinator_service.request_coordination_sync(
+                    state=state,
+                    current_event=event,
+                    round_index=round_idx,
+                )
+                if proposal:
+                    state.proposals.append(proposal)
+                    logger.info(
+                        "International Coordinator generated Proposal [%s] round %d (source=%s, items=%d)",
+                        proposal.proposal_id,
+                        proposal.round,
+                        proposal.source,
+                        len(proposal.items),
+                    )
+            except Exception as exc:
+                logger.error("Failed to generate CoordinatorProposal during COORDINATION_REQUEST: %s", exc)
         return []
 
     def _handle_crisis_escalation(

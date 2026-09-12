@@ -130,3 +130,54 @@ backend/
 ├── tests/                   # Pytest suites
 └── validate_data.py         # Data validation CLI
 ```
+
+---
+
+## Phase 5 — International Coordinator Agent
+
+### Architecture & Role
+Country agents produce sovereign national positions; the **International Coordinator Agent** synthesizes those positions into a balanced proposed international response.
+- **Dedicated Mandate**: Acts as the neutral coordination secretariat. Does not impersonate any country or favor allied blocs.
+- **No Self-Approval**: Proposals are returned with status `PROPOSED`. The Coordinator **cannot** mark proposals as `APPROVED` or mutate simulation state. Negotiation rounds and voting are cleanly deferred to **Phase 6**.
+- **Provider Reuse**: Reuses the unified `LLMProvider` abstraction (`MockLLMProvider` and `AnthropicProvider`).
+- **Prompt Injection Boundary**: Treats country outputs and crisis reports as untrusted data.
+
+### Strict Information Boundary
+The Coordinator context builder strictly prevents intelligence leakage:
+- **No Private Country Reasoning**: Internal classified reasoning and LLM chains-of-thought are strictly excluded; only shareable decision data (`action_id`, `willingness_to_coordinate`, public risk notes) is provided.
+- **No Future Events**: Only events up to `current_tick` are visible.
+- **Code-Calculated Aggregation**: Stance and vote counts are computed deterministically in Python before invoking the LLM.
+
+### Proposal Schema (`CoordinatorProposal`)
+Key fields:
+- `proposal_id`: Unique traceable ID (e.g. `prop_001_sim_99eb_t06`)
+- `simulation_id`, `event_id`, `tick`, `round`
+- `proposal_type`: `JOINT_RESPONSE | INFORMATION_SHARING | TECHNICAL_ASSISTANCE | INVESTIGATION_COMMISSION`
+- `title` & `summary`
+- `items`: List of actionable multilateral items
+- `rationale`: Balancing sovereignty and systemic safety
+- `predicted_votes`: Dict with `approve`, `oppose`, `abstain` (validated against known country IDs)
+- `unresolved_issues`: Contested points blocking full consensus
+- `supporting_countries` & `opposing_countries`
+- `confidence`: Bounded between 0.0 and 1.0
+- `source`: `"llm_coordinator"` or `"deterministic_fallback"`
+- `status`: Always `"PROPOSED"`
+
+### Deterministic Fallback
+If the LLM provider fails, times out, or returns invalid schema data, the Coordinator triggers code-driven deterministic fallback synthesis:
+- Analyzes aware nations and majority action.
+- Derives minimal common-ground response items.
+- Sets `source = "deterministic_fallback"`.
+- 100% reproducible and deterministic across identical state inputs.
+
+### Configuration
+```env
+COORDINATOR_MODEL=claude-sonnet-4-6
+COORDINATOR_TEMPERATURE=0.3
+```
+
+### Endpoints
+- `POST /api/simulations/{id}/coordinate` — Trigger coordination proposal generation
+- `GET /api/simulations/{id}/proposals` — List all proposals produced for a simulation
+- `GET /api/simulations/{id}/proposals/{proposal_id}` — Retrieve a specific proposal
+

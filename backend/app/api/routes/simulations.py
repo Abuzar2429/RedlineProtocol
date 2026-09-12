@@ -4,6 +4,7 @@ Simulation Engine REST API routes (Phase 3).
 from typing import List
 from fastapi import APIRouter, HTTPException, status
 
+from app.agents.coordinator_models import CoordinatorProposal
 from app.schemas.simulation_models import (
     CreateSimulationRequest,
     SimulationEvent,
@@ -174,3 +175,73 @@ async def get_simulation_events(simulation_id: str) -> List[SimulationEvent]:
             detail=f"Simulation '{simulation_id}' not found",
         )
     return engine.state.event_history
+
+
+# ── International Coordinator Routes — Phase 5 ─────────────────────────────────
+
+@router.post("/{simulation_id}/coordinate", response_model=CoordinatorProposal)
+async def trigger_coordination(simulation_id: str) -> CoordinatorProposal:
+    """
+    Invokes the International Coordinator Agent to synthesize current validated
+    country positions and generate a structured proposal.
+    Stores the proposal in the simulation state without modifying country state.
+    """
+    engine = default_simulation_repository.get(simulation_id)
+    if not engine:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Simulation '{simulation_id}' not found",
+        )
+
+    from app.agents.coordinator_service import default_coordinator_service
+
+    try:
+        round_idx = len(engine.state.proposals) + 1
+        proposal = await default_coordinator_service.request_coordination(
+            state=engine.state,
+            current_event=None,
+            round_index=round_idx,
+        )
+        engine.state.proposals.append(proposal)
+        engine.state.crisis_state.phase = "NEGOTIATION"
+        return proposal
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Coordinator proposal generation failed: {str(exc)}",
+        )
+
+
+@router.get("/{simulation_id}/proposals", response_model=List[CoordinatorProposal])
+async def list_proposals(simulation_id: str) -> List[CoordinatorProposal]:
+    """
+    Lists all proposals produced by the International Coordinator for this simulation.
+    """
+    engine = default_simulation_repository.get(simulation_id)
+    if not engine:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Simulation '{simulation_id}' not found",
+        )
+    return engine.state.proposals
+
+
+@router.get("/{simulation_id}/proposals/{proposal_id}", response_model=CoordinatorProposal)
+async def get_proposal(simulation_id: str, proposal_id: str) -> CoordinatorProposal:
+    """
+    Retrieves a specific proposal by its proposal_id.
+    """
+    engine = default_simulation_repository.get(simulation_id)
+    if not engine:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Simulation '{simulation_id}' not found",
+        )
+    for p in engine.state.proposals:
+        if p.proposal_id == proposal_id:
+            return p
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Proposal '{proposal_id}' not found in simulation '{simulation_id}'",
+    )
+

@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     LLM_TIMEOUT: float = 30.0        # Seconds
     LLM_MAX_RETRIES: int = 1
 
+    # ── Coordinator LLM Configuration — Phase 5 ───────────────────────────────
+    COORDINATOR_MODEL: str = "claude-sonnet-4-6"
+    COORDINATOR_TEMPERATURE: float = 0.3
+
     # ── Misc ─────────────────────────────────────────────────────────────────
     LOG_LEVEL: str = "INFO"
 
