@@ -41,6 +41,8 @@ export interface CountryState {
   tension_level?: number;
   defcon_level?: number;
   compliance_status?: string;
+  coordination_status?: string;
+  current_action?: string;
   decision_history?: unknown[];
   current_strategy?: string;
   capabilities_score?: number;
@@ -80,11 +82,12 @@ export interface SimulationEvent {
   event_id: string;
   simulation_id: string;
   tick: number;
+  time_offset?: number;
   event_type: string;
   title: string;
   description: string;
   severity: number;
-  affected_countries: string[];
+  affected_countries?: string[];
   timestamp: string;
   payload?: Record<string, unknown>;
 }

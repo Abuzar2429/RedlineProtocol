@@ -11,11 +11,13 @@ export interface ToastNotification {
 interface UIStoreState {
   sidebarCollapsed: boolean;
   activeSimulationId: string | null;
+  selectedCountryId: string | null;
   toasts: ToastNotification[];
 
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   setActiveSimulationId: (id: string | null) => void;
+  setSelectedCountryId: (id: string | null) => void;
   addToast: (toast: Omit<ToastNotification, 'id' | 'timestamp'>) => void;
   removeToast: (id: string) => void;
   clearToasts: () => void;
@@ -24,11 +26,13 @@ interface UIStoreState {
 export const useUIStore = create<UIStoreState>((set) => ({
   sidebarCollapsed: false,
   activeSimulationId: null,
+  selectedCountryId: null,
   toasts: [],
 
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
   setSidebarCollapsed: (collapsed: boolean) => set({ sidebarCollapsed: collapsed }),
   setActiveSimulationId: (id: string | null) => set({ activeSimulationId: id }),
+  setSelectedCountryId: (id: string | null) => set({ selectedCountryId: id }),
 
   addToast: (toast) => {
     const newToast: ToastNotification = {

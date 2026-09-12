@@ -269,23 +269,65 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
             ...payload,
           } as CountryState;
         }
-      } else if (type === 'decision_recorded' || type === 'country_decision') {
-        const dec = payload as unknown as DecisionRecord;
-        if (dec && dec.decision_id) {
-          newDecisions.unshift(dec);
-        }
+      } else if (type === 'decision_recorded' || type === 'country_decision' || type === 'policy_action') {
+        const decId = String(payload.decision_id || envelope.event_id || `dec_${Date.now()}`);
+        const dec: DecisionRecord = {
+          decision_id: decId,
+          simulation_id: simId,
+          country_id: String(payload.country_id || ''),
+          tick: newTick,
+          created_at_tick: newTick,
+          action_id: String(payload.action_id || ''),
+          label: String(payload.label || payload.action_name || 'Policy Action'),
+          reasoning: String(payload.reasoning || ''),
+          source: String(payload.source || payload.country_id || ''),
+          rag_grounded: Boolean(payload.rag_grounded || (Array.isArray(payload.rag_sources) && payload.rag_sources.length > 0)),
+          rag_sources: Array.isArray(payload.rag_sources) ? (payload.rag_sources as string[]) : undefined,
+        };
+        newDecisions.unshift(dec);
+
+        const evItem: SimulationEvent = {
+          event_id: decId,
+          simulation_id: simId,
+          tick: newTick,
+          time_offset: newTick,
+          timestamp: timestamp,
+          event_type: envelope.event_type,
+          title: dec.label,
+          description: dec.reasoning,
+          severity: 5,
+          payload,
+        };
+        newEvents.unshift(evItem);
+        newHistory.unshift(evItem);
       } else if (type === 'coordinator_proposal') {
         const prop = payload as unknown as CoordinatorProposal;
-        if (prop && prop.proposal_id) {
+        if (prop && (prop.proposal_id || envelope.event_id)) {
           newProposals.unshift(prop);
           newPhase = 'negotiation';
         }
-      } else if (type === 'crisis_event_triggered' || type === 'crisis_escalated') {
-        const ev = payload as unknown as SimulationEvent;
-        if (ev && ev.event_id) {
-          newEvents.unshift(ev);
-          newHistory.unshift(ev);
-        }
+      } else if (
+        type === 'crisis_event_triggered' ||
+        type === 'crisis_escalated' ||
+        type === 'crisis_triggered' ||
+        type === 'timeline_event' ||
+        type === 'event'
+      ) {
+        const evId = String(payload.event_id || envelope.event_id || `evt_${Date.now()}`);
+        const evItem: SimulationEvent = {
+          event_id: evId,
+          simulation_id: simId,
+          tick: newTick,
+          time_offset: newTick,
+          timestamp: timestamp,
+          event_type: envelope.event_type,
+          title: String(payload.title || 'Crisis Event Triggered'),
+          description: String(payload.description || ''),
+          severity: typeof payload.severity === 'number' ? payload.severity : 5,
+          payload,
+        };
+        newEvents.unshift(evItem);
+        newHistory.unshift(evItem);
         if (payload.phase) newPhase = String(payload.phase);
       } else if (type === 'scoring_completed' || type === 'score_update') {
         newScoring = payload as unknown as ScoringResult;

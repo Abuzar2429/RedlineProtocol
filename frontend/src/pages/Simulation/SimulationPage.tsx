@@ -6,8 +6,6 @@ import {
   SkipForward,
   Square,
   Clock,
-  Radio,
-  MapPin,
   TrendingUp,
   GitCompare,
   ArrowLeft,
@@ -19,6 +17,9 @@ import { useUIStore } from '../../stores/uiStore';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { EmptyState } from '../../components/feedback/EmptyState';
+import { WorldMap } from '../../components/map/WorldMap';
+import { LiveEventFeed } from '../../components/feed/LiveEventFeed';
+import type { CountryData } from '../../types';
 
 export const SimulationPage: React.FC = () => {
   const { simulationId } = useParams<{ simulationId: string }>();
@@ -31,6 +32,7 @@ export const SimulationPage: React.FC = () => {
   const setError = useSimulationStore((s) => s.setError);
   const storeError = useSimulationStore((s) => s.error);
 
+  const [countryProfiles, setCountryProfiles] = useState<Record<string, CountryData>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [controlActionInProgress, setControlActionInProgress] = useState<string | null>(null);
 
@@ -41,9 +43,19 @@ export const SimulationPage: React.FC = () => {
     try {
       setActiveSimulationId(simId);
 
-      // 1. Fetch authoritative initial state via REST
-      const initialState = await apiClient.getFullSimulationState(simId);
+      // 1. Fetch authoritative initial state and country profiles via REST
+      const [initialState, countriesList] = await Promise.all([
+        apiClient.getFullSimulationState(simId),
+        apiClient.getCountries().catch(() => [] as CountryData[]),
+      ]);
+
       loadInitialState(simId, initialState);
+
+      const profilesMap: Record<string, CountryData> = {};
+      countriesList.forEach((c) => {
+        profilesMap[c.id] = c;
+      });
+      setCountryProfiles(profilesMap);
 
       // 2. Connect WebSocket client for real-time live events
       const wsClient = getWebSocketClient(simId);
@@ -196,9 +208,9 @@ export const SimulationPage: React.FC = () => {
     );
   }
 
-  const isRunning = currentSimulation?.status === 'running';
-  const isPaused = currentSimulation?.status === 'paused';
-  const isCompleted = currentSimulation?.status === 'completed';
+  const isRunning = currentSimulation?.status === 'running' || currentSimulation?.status === 'RUNNING';
+  const isPaused = currentSimulation?.status === 'paused' || currentSimulation?.status === 'PAUSED';
+  const isCompleted = currentSimulation?.status === 'completed' || currentSimulation?.status === 'COMPLETED';
 
   return (
     <div className="space-y-6">
@@ -323,73 +335,51 @@ export const SimulationPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Modular Shell Placeholder Areas for Subsequent Phases (Phases 11-13) */}
+      {/* Phase 11 Visual Simulation Layer: Interactive World Map & Live Multilateral Event Feed */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Central Area (Future Phase 11: World Map + Live Feed) */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-dashed border-cyan-900/80 bg-slate-950/40 p-8 flex flex-col items-center justify-center text-center min-h-[360px]">
-            <div className="p-3 rounded-full bg-cyan-950/60 border border-cyan-800 text-cyan-400 mb-3">
-              <MapPin className="w-6 h-6" />
-            </div>
-            <div className="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">
-              Phase 11 Foundation Slot
-            </div>
-            <h3 className="text-sm font-semibold text-slate-200 mb-2">
-              Geopolitical World Map & Interactive Country Markers
-            </h3>
-            <p className="text-xs text-slate-400 max-w-md">
-              Leaflet SVG canvas, country posture indicators, defectors, and escalation hot-zones will mount
-              into this shell container in Phase 11.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/40 p-6 flex flex-col items-center justify-center text-center min-h-[160px]">
-            <div className="p-2 rounded-full bg-slate-900 text-slate-400 mb-2">
-              <Radio className="w-5 h-5" />
-            </div>
-            <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">
-              Phase 11 Foundation Slot
-            </div>
-            <h3 className="text-xs font-semibold text-slate-300 mb-1">Live Multilateral Event Stream</h3>
-            <p className="text-xs text-slate-500 max-w-sm">
-              Real-time feed aggregating country decisions, crisis injections, and coordinator announcements.
-            </p>
-          </div>
+        {/* World Map with Country Markers and Slide-Out Intelligence Panel */}
+        <div className="lg:col-span-2">
+          <WorldMap countryProfiles={countryProfiles} />
         </div>
 
-        {/* Right Rail (Future Phase 12 & 13: Metrics, Negotiation, Three-Mode Comparison) */}
-        <div className="space-y-6">
-          {/* Metrics & Scoring Slot */}
-          <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/40 p-6 flex flex-col items-center justify-center text-center">
-            <div className="p-2 rounded-full bg-slate-900 text-slate-400 mb-2">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-            <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">
-              Phase 12 Foundation Slot
-            </div>
-            <h3 className="text-xs font-semibold text-slate-300 mb-1">
-              Deterministic Governance Metrics
-            </h3>
-            <p className="text-xs text-slate-500">
-              Cooperation Index, Stability Index, Escalation Rate, and Regulatory Compliance gauges.
-            </p>
-          </div>
+        {/* Live Multilateral Event Feed */}
+        <div className="lg:col-span-1">
+          <LiveEventFeed />
+        </div>
+      </div>
 
-          {/* Negotiation & Voting Slot */}
-          <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/40 p-6 flex flex-col items-center justify-center text-center">
-            <div className="p-2 rounded-full bg-slate-900 text-slate-400 mb-2">
-              <GitCompare className="w-5 h-5" />
-            </div>
-            <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">
-              Phase 12 & 13 Foundation Slots
-            </div>
-            <h3 className="text-xs font-semibold text-slate-300 mb-1">
-              Multilateral Negotiation & Mode Comparison
-            </h3>
-            <p className="text-xs text-slate-500">
-              Coordinator treaty proposals, treaty voting rounds, and comparative telemetry across Autonomous, HITL, and Hybrid modes.
-            </p>
+      {/* Modular Shell Placeholder Areas for Subsequent Phases (Phases 12 & 13) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+        {/* Metrics & Scoring Slot (Phase 12 Foundation) */}
+        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/40 p-5 flex flex-col items-center justify-center text-center">
+          <div className="p-2 rounded-full bg-slate-900 text-slate-400 mb-2">
+            <TrendingUp className="w-5 h-5" />
           </div>
+          <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">
+            Phase 12 Foundation Slot
+          </div>
+          <h3 className="text-xs font-semibold text-slate-300 mb-1">
+            Deterministic Governance Metrics
+          </h3>
+          <p className="text-xs text-slate-500 max-w-sm">
+            Cooperation Index, Stability Index, Escalation Rate, and Regulatory Compliance gauges.
+          </p>
+        </div>
+
+        {/* Negotiation & Voting Slot (Phase 12 & 13 Foundation) */}
+        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/40 p-5 flex flex-col items-center justify-center text-center">
+          <div className="p-2 rounded-full bg-slate-900 text-slate-400 mb-2">
+            <GitCompare className="w-5 h-5" />
+          </div>
+          <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">
+            Phase 12 & 13 Foundation Slots
+          </div>
+          <h3 className="text-xs font-semibold text-slate-300 mb-1">
+            Multilateral Negotiation & Mode Comparison
+          </h3>
+          <p className="text-xs text-slate-500 max-w-sm">
+            Coordinator treaty proposals, treaty voting rounds, and comparative telemetry across Autonomous, HITL, and Hybrid modes.
+          </p>
         </div>
       </div>
     </div>
