@@ -52,6 +52,15 @@ from app.schemas.negotiation_models import (
     VotingResult,
 )
 
+from app.schemas.scoring_models import (
+    MetricId,
+    ScoreGrade,
+    MetricResult,
+    SimulationMetrics,
+    ScoringInputSnapshot,
+    ScoringResult,
+)
+
 __all__ = [
     "RootResponse",
     "HealthResponse",
@@ -85,4 +94,11 @@ __all__ = [
     "Vote",
     "VoteType",
     "VotingResult",
+    "MetricId",
+    "ScoreGrade",
+    "MetricResult",
+    "SimulationMetrics",
+    "ScoringInputSnapshot",
+    "ScoringResult",
 ]
+
