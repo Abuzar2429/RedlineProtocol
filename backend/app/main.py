@@ -90,10 +90,17 @@ def create_app() -> FastAPI:
 
     # Phase 2: Data layer read-only endpoints
     # Phase 3: Simulation Engine endpoints
-    from app.api.routes import countries_router, scenarios_router, simulations_router
+    # Phase 6: Negotiation & Voting endpoints
+    from app.api.routes import (
+        countries_router,
+        scenarios_router,
+        simulations_router,
+        negotiations_router,
+    )
     app.include_router(countries_router)
     app.include_router(scenarios_router)
     app.include_router(simulations_router)
+    app.include_router(negotiations_router)
 
     return app
 

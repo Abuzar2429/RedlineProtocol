@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field
 
 from app.schemas.coordinator_models import CoordinatorProposal
+from app.schemas.negotiation_models import NegotiationSession
 
 
 # ── Status and Types ──────────────────────────────────────────────────────────
@@ -28,6 +29,11 @@ SimulationEventType = Literal[
     "DECISION_REQUIRED",
     "POLICY_ACTION",
     "COORDINATION_REQUEST",
+    "NEGOTIATION_STARTED",
+    "NEGOTIATION_ROUND_COMPLETED",
+    "NEGOTIATION_PASSED",
+    "NEGOTIATION_FAILED",
+    "PROPOSAL_REVISION_REQUIRED",
     "CRISIS_ESCALATION",
     "CRISIS_DE_ESCALATION",
     "CRISIS_RESOLVED",
@@ -106,6 +112,7 @@ class SimulationState(BaseModel):
     pending_decisions: List[Dict[str, Any]] = Field(default_factory=list, description="Decisions awaiting execution")
     decisions: List[DecisionRecord] = Field(default_factory=list, description="Recorded decision ledger")
     proposals: List[CoordinatorProposal] = Field(default_factory=list, description="International Coordinator proposals ledger")
+    negotiations: List[NegotiationSession] = Field(default_factory=list, description="Negotiation sessions ledger")
     event_history: List[SimulationEvent] = Field(default_factory=list, description="Immutable full history log")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Session configuration metadata")
 

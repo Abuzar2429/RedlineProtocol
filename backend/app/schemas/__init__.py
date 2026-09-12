@@ -41,6 +41,16 @@ from app.schemas.coordinator_models import (
     DeterministicAggregation,
     PredictedVotes,
 )
+from app.schemas.negotiation_models import (
+    NegotiationOutcome,
+    NegotiationRound,
+    NegotiationSession,
+    NegotiationStatus,
+    ProposalVersion,
+    Vote,
+    VoteType,
+    VotingResult,
+)
 
 __all__ = [
     "RootResponse",
@@ -67,4 +77,12 @@ __all__ = [
     "CountryPositionSummary",
     "DeterministicAggregation",
     "PredictedVotes",
+    "NegotiationOutcome",
+    "NegotiationRound",
+    "NegotiationSession",
+    "NegotiationStatus",
+    "ProposalVersion",
+    "Vote",
+    "VoteType",
+    "VotingResult",
 ]

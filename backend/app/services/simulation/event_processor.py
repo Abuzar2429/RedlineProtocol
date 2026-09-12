@@ -38,6 +38,7 @@ class EventProcessor:
         event_queue: EventQueue,
         decision_service: Optional[Any] = None,
         coordinator_service: Optional[Any] = None,
+        negotiation_service: Optional[Any] = None,
     ):
         self.scenario = scenario
         self.countries_map = countries_map
@@ -53,6 +54,12 @@ class EventProcessor:
             self.coordinator_service = default_coordinator_service
         else:
             self.coordinator_service = coordinator_service
+
+        if negotiation_service is None:
+            from app.negotiation.negotiation_service import default_negotiation_service
+            self.negotiation_service = default_negotiation_service
+        else:
+            self.negotiation_service = negotiation_service
 
     def process_event(
         self,
@@ -71,6 +78,9 @@ class EventProcessor:
             "DECISION_REQUIRED": self._handle_decision_required,
             "POLICY_ACTION": self._handle_policy_action,
             "COORDINATION_REQUEST": self._handle_coordination_request,
+            "NEGOTIATION_PASSED": self._handle_negotiation_passed,
+            "NEGOTIATION_FAILED": self._handle_negotiation_failed,
+            "PROPOSAL_REVISION_REQUIRED": self._handle_proposal_revision_required,
             "CRISIS_ESCALATION": self._handle_crisis_escalation,
             "CRISIS_DE_ESCALATION": self._handle_crisis_de_escalation,
             "CRISIS_RESOLVED": self._handle_crisis_resolved,
@@ -377,6 +387,8 @@ class EventProcessor:
         self, event: SimulationEvent, state: SimulationState
     ) -> List[SimulationEvent]:
         state.crisis_state.phase = "NEGOTIATION"
+        new_events: List[SimulationEvent] = []
+
         if state.mode in ("coordinated", "partial") and self.coordinator_service:
             try:
                 round_idx = len(state.proposals) + 1
@@ -394,8 +406,87 @@ class EventProcessor:
                         proposal.source,
                         len(proposal.items),
                     )
+
+                    # Phase 6: Start and evaluate negotiation
+                    if self.negotiation_service:
+                        session = self.negotiation_service.start_negotiation(
+                            state=state,
+                            proposal=proposal,
+                            max_rounds=3,
+                        )
+                        outcome = self.negotiation_service.run_full_negotiation(session, state)
+                        state.negotiations.append(session)
+
+                        if session.outcome and session.outcome.agreement_reached:
+                            new_events.append(
+                                SimulationEvent(
+                                    event_id=f"ev_neg_pass_{session.negotiation_id}",
+                                    tick=state.current_tick + 1,
+                                    priority=5,
+                                    event_type="NEGOTIATION_PASSED",
+                                    source="international_coordinator",
+                                    description=(
+                                        f"Negotiation passed ({session.outcome.final_status}): "
+                                        f"{len(session.outcome.supporting_countries)} countries endorsed final agreement."
+                                    ),
+                                    payload={
+                                        "negotiation_id": session.negotiation_id,
+                                        "final_status": session.outcome.final_status,
+                                    },
+                                )
+                            )
+                        elif session.outcome and not session.outcome.agreement_reached:
+                            new_events.append(
+                                SimulationEvent(
+                                    event_id=f"ev_neg_fail_{session.negotiation_id}",
+                                    tick=state.current_tick + 1,
+                                    priority=5,
+                                    event_type="NEGOTIATION_FAILED",
+                                    source="international_coordinator",
+                                    description=(
+                                        f"Negotiation concluded without agreement ({session.outcome.final_status}): "
+                                        f"{session.outcome.failure_reason}."
+                                    ),
+                                    payload={
+                                        "negotiation_id": session.negotiation_id,
+                                        "final_status": session.outcome.final_status,
+                                    },
+                                )
+                            )
+                        elif session.status == "REVISION_REQUIRED":
+                            new_events.append(
+                                SimulationEvent(
+                                    event_id=f"ev_neg_rev_{session.negotiation_id}_r{session.current_round}",
+                                    tick=state.current_tick + 1,
+                                    priority=6,
+                                    event_type="PROPOSAL_REVISION_REQUIRED",
+                                    source="international_coordinator",
+                                    description=f"Round {round_rec.round_number} concluded; proposal revision required for round {session.current_round}.",
+                                    payload={"negotiation_id": session.negotiation_id},
+                                )
+                            )
             except Exception as exc:
                 logger.error("Failed to generate CoordinatorProposal during COORDINATION_REQUEST: %s", exc)
+
+        return new_events
+
+    def _handle_negotiation_passed(
+        self, event: SimulationEvent, state: SimulationState
+    ) -> List[SimulationEvent]:
+        state.crisis_state.phase = "NEGOTIATION"
+        state.crisis_state.current_risk = max(5.0, state.crisis_state.current_risk - 15.0)
+        return []
+
+    def _handle_negotiation_failed(
+        self, event: SimulationEvent, state: SimulationState
+    ) -> List[SimulationEvent]:
+        state.crisis_state.phase = "ESCALATION"
+        state.crisis_state.current_risk = min(100.0, state.crisis_state.current_risk + 10.0)
+        return []
+
+    def _handle_proposal_revision_required(
+        self, event: SimulationEvent, state: SimulationState
+    ) -> List[SimulationEvent]:
         return []
 
     def _handle_crisis_escalation(

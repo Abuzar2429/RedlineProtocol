@@ -181,3 +181,34 @@ COORDINATOR_TEMPERATURE=0.3
 - `GET /api/simulations/{id}/proposals` — List all proposals produced for a simulation
 - `GET /api/simulations/{id}/proposals/{proposal_id}` — Retrieve a specific proposal
 
+---
+
+## Phase 6 — Negotiation & Voting Logic
+
+### Architecture & Separation of Responsibilities
+Phase 6 implements a deterministic negotiation and voting engine that consumes `CoordinatorProposal` objects from Phase 5, executes multi-round country voting, and yields a structured `NegotiationOutcome`.
+- **Zero LLM Judgment in Voting**: LLMs propose policy text and summarize issues, but vote counting, quorum validation, thresholds, tie resolutions, and pass/fail statuses are strictly **deterministic Python code**.
+- **Proposal Versioning**: Each revision round produces an immutable `ProposalVersion` (`v1`, `v2`, `v3`) with full parent provenance and revision justifications.
+- **Authoritative Simulation State**: The Negotiation subsystem delivers a `NegotiationOutcome` object back to the engine. State transitions (`NEGOTIATION_PASSED`, `NEGOTIATION_FAILED`) are executed authoritatively by the Simulation Engine.
+
+### The Three Coordination Modes
+| Mode | Quorum Requirement | Approval Threshold | Tie Behavior | Outcome if Passed | Failure / Max Rounds Behavior |
+|---|---|---|---|---|---|
+| `no_coordination` | None (0%) | 100% (Unachievable) | Fails | N/A | Immediate failure (`BREAKDOWN` / `FAILED`); 1 round only. |
+| `partial` | $\ge 50\%$ participation | Simple majority ($> 50\%$ of non-abstaining votes) | Fails | `PARTIAL_AGREEMENT` | Revisions allowed up to 3 rounds; fails if threshold not achieved. |
+| `coordinated` | $\ge 60\%$ participation | Qualified majority ($\ge 60\%$ of non-abstaining votes) | Fails | `ACCEPTED` (Agreement Reached) | Revisions allowed up to 3 rounds; deadlocks/timeouts yield `BREAKDOWN`. |
+
+### Voting Rules & Behavior
+- **Vote Values**: Exactly `Approve`, `Reject`, or `Undecided` (per `rules.md` §4).
+- **Abstentions (`Undecided`)**: Count toward meeting quorum participation, but are excluded from the approval fraction denominator.
+- **Ties**: A 50%-50% tie fails the threshold for both simple and qualified majorities, triggering a revision round (if rounds remain) or deadlock breakdown.
+- **Deadlock Detection**: If vote counts between consecutive rounds are identical, the session terminates with `BREAKDOWN` to prevent wasted loops.
+
+### Negotiation Endpoints
+- `POST /api/simulations/{id}/negotiate` — Run full multi-round negotiation
+- `GET /api/simulations/{id}/negotiations` — List negotiation sessions
+- `GET /api/simulations/{id}/negotiations/{neg_id}` — Get specific session with complete round/vote ledger
+- `POST /api/simulations/{id}/negotiations/{neg_id}/advance` — Step a single negotiation round
+- `GET /api/simulations/{id}/negotiations/{neg_id}/outcome` — Retrieve final outcome
+
+
