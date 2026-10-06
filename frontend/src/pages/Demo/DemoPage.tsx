@@ -108,7 +108,7 @@ export const DemoPage: React.FC = () => {
               />
             </h1>
             <p className="text-xs text-slate-400 font-mono">
-              Deterministic offline execution · 100% reproducible · Zero network dependencies
+              Deterministic offline execution · 100% reproducible · Instant playback
             </p>
           </div>
         </div>
@@ -117,7 +117,7 @@ export const DemoPage: React.FC = () => {
         <div className="flex items-center gap-2 text-xs font-mono">
           <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Deterministic Fallback: Active</span>
+            <span>Offline Engine: Active</span>
           </span>
           <button
             onClick={() => {
@@ -136,7 +136,7 @@ export const DemoPage: React.FC = () => {
           {/* Scenario Selection */}
           <div>
             <label className="block text-xs font-mono font-medium text-slate-300 uppercase tracking-wider mb-1.5">
-              Fictional Demo Scenario
+              Demo Scenario
             </label>
             <select
               value={selectedScenarioId}
@@ -154,7 +154,7 @@ export const DemoPage: React.FC = () => {
           {/* Seed Input */}
           <div>
             <label className="block text-xs font-mono font-medium text-slate-300 uppercase tracking-wider mb-1.5">
-              Deterministic Seed
+              Simulation Seed
             </label>
             <div className="flex items-center">
               <input
@@ -184,7 +184,7 @@ export const DemoPage: React.FC = () => {
               ) : (
                 <>
                   <Zap className="w-4 h-4 fill-current" />
-                  <span>Run Seeded Demo (3 Modes)</span>
+                  <span>Run Demo (3 Modes)</span>
                 </>
               )}
             </button>
@@ -219,7 +219,7 @@ export const DemoPage: React.FC = () => {
           <div className="flex items-center justify-between text-xs font-mono text-cyan-300 mb-2">
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 animate-spin" />
-              <span>Simulating All 3 Governance Modes via Real Engine Pipeline...</span>
+              <span>Simulating all three governance modes...</span>
             </div>
             <span>Deterministic Seed: {demoSeed}</span>
           </div>
@@ -249,7 +249,7 @@ export const DemoPage: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
               }`}
             >
-              1. Three-Mode Results & Scoring
+              1. Outcome Comparison
             </button>
             <button
               onClick={() => setActiveTab('replay')}
@@ -287,7 +287,7 @@ export const DemoPage: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-xs font-mono uppercase tracking-wider text-amber-400 font-semibold">
-                      Authoritative Winner (Phase 7 Scoring)
+                      Best-Performing Strategy
                     </div>
                     <h2 className="text-2xl font-bold text-white capitalize">
                       {winner} Coordination Protocol
@@ -343,7 +343,7 @@ export const DemoPage: React.FC = () => {
             <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/60 shadow-md">
               <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 mb-4 flex items-center gap-2">
                 <Activity className="w-4 h-4 text-cyan-400" />
-                Cross-Mode Scoring Metrics (Phase 7 Engine)
+                Key Scoring Metrics
               </h3>
               <MetricsComparisonBar results={results} />
             </div>
@@ -354,7 +354,7 @@ export const DemoPage: React.FC = () => {
             <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/60 shadow-md">
               <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 mb-4 flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-400" />
-                Comparative Pillar Deltas
+                Pillar Comparison
               </h3>
               <DeltasTable deltas={deltas} />
             </div>
@@ -374,7 +374,7 @@ export const DemoPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-purple-400" />
                 <span className="text-xs font-mono font-semibold text-slate-200">
-                  Authoritative Event Sequence (Recorded)
+                  Recorded Event Sequence
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950 text-purple-200 border border-purple-800">
                   {replayedEvents.length} events (Tick T+{String(replayTick).padStart(2, '0')})
@@ -450,7 +450,7 @@ export const DemoPage: React.FC = () => {
       <div className="p-5 rounded-xl border border-slate-800 bg-slate-950/60">
         <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-2">
           <History className="w-4 h-4 text-purple-400" />
-          Recorded Authoritative Replay Sessions
+          Saved Replay Sessions
         </h3>
 
         {replays.length === 0 ? (

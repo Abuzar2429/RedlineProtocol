@@ -64,7 +64,7 @@ export const ReplayControls: React.FC<ReplayControlsProps> = ({
         <div className="flex items-center gap-2">
           <Sliders className="w-4 h-4 text-purple-400" />
           <span className="text-xs font-mono font-semibold uppercase tracking-wider text-purple-300">
-            Replay Playback Engine
+            Replay Controls
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950 text-purple-200 border border-purple-800/80">
             {activeReplay.scenario_id}
@@ -105,9 +105,9 @@ export const ReplayControls: React.FC<ReplayControlsProps> = ({
           />
         </div>
         <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-1">
-          <span>T+00 (Genesis)</span>
-          <span className="text-purple-400 font-medium">Authoritative Timeline Scrubber</span>
-          <span>T+{String(maxTick).padStart(2, '0')} (Conclusion)</span>
+          <span>T+00 (Start)</span>
+          <span className="text-purple-400 font-medium">Timeline Scrubber</span>
+          <span>T+{String(maxTick).padStart(2, '0')} (End)</span>
         </div>
       </div>
 

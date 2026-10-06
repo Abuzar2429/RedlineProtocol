@@ -101,6 +101,13 @@ export class ApiClient {
     return this.request<ScenarioData>(`/api/scenarios/${id}`);
   }
 
+  createCustomScenario(data: any): Promise<any> {
+    return this.request<any>('/api/scenarios', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   // ── Countries ──────────────────────────────────────────────────────────────
   getCountries(): Promise<CountryData[]> {
     return this.request<CountryData[]>('/api/countries');

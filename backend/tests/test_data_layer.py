@@ -91,7 +91,7 @@ def test_country_strategic_priorities_present():
 
 def test_load_all_scenarios_count():
     scenarios = load_all_scenarios()
-    assert len(scenarios) == 3, f"Expected exactly 3 scenarios, got {len(scenarios)}"
+    assert len(scenarios) >= 3, f"Expected at least 3 scenarios, got {len(scenarios)}"
 
 
 def test_scenario_ids_unique():
@@ -249,7 +249,7 @@ async def test_api_list_scenarios():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert len(data) == 3
+    assert len(data) >= 3
 
 
 @pytest.mark.asyncio

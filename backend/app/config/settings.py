@@ -25,13 +25,15 @@ class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
 
     # ── LLM Configuration — Phase 4+ ──────────────────────────────────────────
-    LLM_PROVIDER: str = "mock"       # "mock" | "anthropic" | "openai"
-    LLM_MODEL: str = "claude-sonnet-4-6"
+    LLM_PROVIDER: str = "mock"       # "mock" | "anthropic" | "openai" | "ollama" | "local"
+    LLM_MODEL: str = "redline-llm"
     LLM_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""      # Alias / backwards compatibility
     LLM_TEMPERATURE: float = 0.7
-    LLM_TIMEOUT: float = 30.0        # Seconds
+    LLM_TIMEOUT: float = 60.0        # Seconds
     LLM_MAX_RETRIES: int = 1
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    LOCAL_LLM_URL: str = "http://localhost:8000/v1"
 
     # ── Coordinator LLM Configuration — Phase 5 ───────────────────────────────
     COORDINATOR_MODEL: str = "claude-sonnet-4-6"

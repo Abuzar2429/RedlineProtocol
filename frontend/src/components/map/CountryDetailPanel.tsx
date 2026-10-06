@@ -84,7 +84,7 @@ export const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({ countryP
         <div className="p-2.5 rounded-lg bg-slate-900/50 border border-slate-800/80">
           <div className="text-[10px] text-slate-500 uppercase flex items-center gap-1">
             <Activity className="w-3 h-3 text-cyan-400" />
-            <span>Tension Index</span>
+            <span>Tension Level</span>
           </div>
           <div className="text-sm font-bold text-slate-200 mt-1">
             {liveState?.tension_level !== undefined ? `${liveState.tension_level}%` : 'Nominal'}
@@ -94,7 +94,7 @@ export const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({ countryP
         <div className="p-2.5 rounded-lg bg-slate-900/50 border border-slate-800/80">
           <div className="text-[10px] text-slate-500 uppercase flex items-center gap-1">
             <Globe className="w-3 h-3 text-cyan-400" />
-            <span>Intel Completeness</span>
+            <span>Information Completeness</span>
           </div>
           <div className="text-sm font-bold text-cyan-400 mt-1">
             {liveState?.information_completeness !== undefined
@@ -106,7 +106,7 @@ export const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({ countryP
         <div className="p-2.5 rounded-lg bg-slate-900/50 border border-slate-800/80">
           <div className="text-[10px] text-slate-500 uppercase flex items-center gap-1">
             <Cpu className="w-3 h-3 text-slate-400" />
-            <span>AI Capacity</span>
+            <span>AI Capability</span>
           </div>
           <div className="text-xs font-semibold text-slate-300 mt-1 capitalize">
             {staticProfile?.ai_capability_level || 'High'}
@@ -129,7 +129,7 @@ export const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({ countryP
         <div className="p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-800/60 text-xs">
           <div className="text-[10px] font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-1 mb-1">
             <CheckCircle2 className="w-3 h-3" />
-            <span>Committed Policy Action</span>
+            <span>Active Response</span>
           </div>
           <p className="text-slate-200 font-medium">{liveState.current_action}</p>
         </div>
@@ -140,7 +140,7 @@ export const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({ countryP
         <div className="space-y-1">
           <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1">
             <FileText className="w-3 h-3 text-slate-400" />
-            <span>Public Strategic Posture</span>
+            <span>National Policy Stance</span>
           </div>
           <p className="text-[11px] text-slate-300 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80 leading-relaxed max-h-24 overflow-y-auto">
             {staticProfile.ai_policy_position}
@@ -152,7 +152,7 @@ export const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({ countryP
       {countryDecisions.length > 0 && (
         <div className="space-y-1.5 pt-1 border-t border-slate-800">
           <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
-            Committed Actions ({countryDecisions.length})
+            Recent Actions ({countryDecisions.length})
           </div>
           <div className="space-y-1.5">
             {countryDecisions.map((dec) => (

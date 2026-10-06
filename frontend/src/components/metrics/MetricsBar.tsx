@@ -39,17 +39,17 @@ export const MetricsBar: React.FC = () => {
             </div>
             <div>
               <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wider font-mono">
-                Multilateral Crisis Governance Performance
+                Crisis Governance Performance
               </h2>
               <p className="text-xs text-slate-400">
-                Awaiting scoring evaluation • Spec §6.5 & §7.1 Deterministic Engine
+                Awaiting scoring evaluation • Evaluated as the simulation progresses
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2 text-xs text-slate-400 font-mono bg-slate-950/60 px-3 py-1.5 rounded-lg border border-slate-800">
             <Clock className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-            <span>Telemetry Active • Current Tick: T+{currentTick}</span>
+            <span>Step: {currentTick}</span>
             <span className="text-slate-600">|</span>
             <span className="uppercase text-slate-400 font-semibold">{status}</span>
           </div>
@@ -113,7 +113,7 @@ export const MetricsBar: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2">
               <h2 className="text-lg font-bold text-slate-100 font-mono tracking-tight">
-                COMPOSITE SCORE: <span className="text-cyan-300">{overallScore}</span>
+                OVERALL SCORE: <span className="text-cyan-300">{overallScore}</span>
                 <span className="text-xs text-slate-400 font-normal"> / 100</span>
               </h2>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
@@ -121,7 +121,7 @@ export const MetricsBar: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-300 mt-0.5 font-medium">
-              {scoring.performance_headline || 'Deterministic crisis response outcome calculated.'}
+              {scoring.performance_headline || 'Crisis response outcome evaluated.'}
             </p>
           </div>
         </div>
@@ -134,7 +134,7 @@ export const MetricsBar: React.FC = () => {
           </div>
           <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-800">
             <Info className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Authoritative • Zero LLM Score Authority</span>
+            <span>Verified Deterministic Score</span>
           </div>
         </div>
       </div>

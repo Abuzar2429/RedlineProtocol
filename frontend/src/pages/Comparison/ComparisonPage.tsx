@@ -14,6 +14,10 @@ import { apiClient } from '../../services/api/client';
 import { ModeComparisonCard } from '../../components/comparison/ModeComparisonCard';
 import { MetricsComparisonBar } from '../../components/comparison/MetricsComparisonBar';
 import { DeltasTable } from '../../components/comparison/DeltasTable';
+// @ts-expect-error standard jsx import
+import { TextScenarioInput } from '../../components/scenario/TextScenarioInput';
+// @ts-expect-error standard jsx import
+import { NewspaperOutcomeSummary } from '../../components/outcome/NewspaperOutcomeSummary';
 import type { ScenarioData, SimulationMode } from '../../types';
 
 export const ComparisonPage: React.FC = () => {
@@ -75,14 +79,14 @@ export const ComparisonPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">
             <Scale className="w-4 h-4" />
-            <span>Multilateral Policy Evaluation • Comparative Engine</span>
+            <span>Comparative Policy Analysis</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-            Governance Strategy Comparison View
+            Compare Governance Strategies
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-            Empirically evaluate the exact same fictional crisis scenario across three distinct
-            governance architectures: <span className="text-rose-400 font-medium">No Coordination</span>,{' '}
+            Evaluate how the exact same crisis scenario unfolds across three distinct governance approaches:{' '}
+            <span className="text-rose-400 font-medium">No Coordination</span>,{' '}
             <span className="text-amber-400 font-medium">Partial Coordination</span>, and{' '}
             <span className="text-emerald-400 font-medium">Full Coordinated Governance</span>.
           </p>
@@ -111,11 +115,19 @@ export const ComparisonPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Input Custom Scenario via Text */}
+      <TextScenarioInput
+        onScenarioCreated={(newSc: ScenarioData) => {
+          setScenarios((prev) => [newSc, ...prev]);
+          setSelectedScenarioId(newSc.id);
+        }}
+      />
+
       {/* Launcher Bar (if no active comparison or to run another) */}
       <div className="rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 card-hover">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex flex-col">
-            <label className="text-[10px] font-mono uppercase text-slate-400 mb-1">Target Scenario</label>
+            <label className="text-[10px] font-mono uppercase text-slate-400 mb-1">Scenario</label>
             <select
               value={selectedScenarioId}
               onChange={(e) => setSelectedScenarioId(e.target.value)}
@@ -130,7 +142,7 @@ export const ComparisonPage: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-mono uppercase text-slate-400 mb-1">Max Simulation Ticks</label>
+            <label className="text-[10px] font-mono uppercase text-slate-400 mb-1">Simulation Steps</label>
             <input
               type="number"
               min={10}
@@ -156,7 +168,7 @@ export const ComparisonPage: React.FC = () => {
           ) : (
             <>
               <Play className="w-4 h-4 fill-current" />
-              <span>Launch 3-Mode Comparison</span>
+              <span>Run 3-Mode Comparison</span>
             </>
           )}
         </button>
@@ -168,7 +180,7 @@ export const ComparisonPage: React.FC = () => {
           <div className="flex items-center justify-between text-xs font-mono text-cyan-300">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-              Simulation Pipeline Active: Executing governance architectures sequentially...
+              Running simulations across all 3 governance modes...
             </span>
             <span>Scenario: {selectedScenarioId}</span>
           </div>
@@ -237,7 +249,7 @@ export const ComparisonPage: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-semibold">
-                    Authoritative Decision Matrix (Highest Composite Score)
+                    Best-Performing Governance Model
                   </div>
                   <h2 className="text-xl font-bold text-slate-100 mt-0.5">
                     {currentRun.winner === 'TIE'
@@ -254,7 +266,7 @@ export const ComparisonPage: React.FC = () => {
                   Scenario: {currentRun.scenario_title}
                 </span>
                 <span className="text-xs font-mono px-3 py-1 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-300">
-                  Authoritative (Code-Driven)
+                  Verified Outcome
                 </span>
               </div>
             </div>
@@ -269,6 +281,18 @@ export const ComparisonPage: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Newspaper Article Breakdown of Winning Outcome */}
+          {currentRun.winner && currentRun.winner !== 'FAILED' && (
+            <NewspaperOutcomeSummary
+              simulation={null}
+              scoring={currentRun.results[currentRun.winner]}
+              mode={currentRun.winner}
+              scenarioTitle={currentRun.scenario_title}
+              isComparisonWinner={true}
+              initiallyExpanded={true}
+            />
+          )}
 
           {/* 3-Column Side-by-Side Comparison Grid */}
           <div>
@@ -317,8 +341,8 @@ export const ComparisonPage: React.FC = () => {
           <div>
             <h3 className="text-base font-semibold text-slate-200">No Active Comparison Selected</h3>
             <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-              Select a target crisis scenario above and click &quot;Run 3-Mode Comparison&quot; to
-              orchestrate runs across all three governance architectures.
+              Select a crisis scenario above and click &quot;Run 3-Mode Comparison&quot; to
+              evaluate all three governance models side by side.
             </p>
           </div>
           <button
@@ -326,7 +350,7 @@ export const ComparisonPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-semibold text-xs font-mono transition-colors"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
-            <span>Launch Comparison Now</span>
+            <span>Run Comparison Now</span>
           </button>
         </div>
       )}

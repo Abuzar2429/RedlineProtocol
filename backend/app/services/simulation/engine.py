@@ -243,10 +243,13 @@ class SimulationEngine:
                 # If nothing processed yet and queue not empty, fast-forward to next event
                 if not processed_this_step and not self.event_queue.is_empty():
                     next_event = self.event_queue.peek()
-                    if next_event:
+                    if next_event and next_event.tick > current_tick and current_tick < self.max_ticks:
                         jump_tick = min(next_event.tick, self.max_ticks)
                         self.clock.set_tick(jump_tick)
                         current_tick = jump_tick
+                        if next_event.tick > self.max_ticks:
+                            self.state.status = "COMPLETED"
+                            break
                         continue
                 break
 

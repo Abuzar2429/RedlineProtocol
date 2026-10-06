@@ -366,7 +366,7 @@ class EventProcessor:
         elif t_type == "resolution":
             state.crisis_state.phase = "RESOLUTION"
             # Schedule resolution if timeline reached end
-            max_offset = max(te.time_offset for te in self.scenario.timeline)
+            max_offset = max((te.time_offset for te in self.scenario.timeline), default=event.tick)
             if event.tick >= max_offset:
                 new_events.append(
                     SimulationEvent(
@@ -454,6 +454,7 @@ class EventProcessor:
                                 )
                             )
                         elif session.status == "REVISION_REQUIRED":
+                            last_round_num = session.rounds[-1].round_number if session.rounds else 1
                             new_events.append(
                                 SimulationEvent(
                                     event_id=f"ev_neg_rev_{session.negotiation_id}_r{session.current_round}",
@@ -461,7 +462,7 @@ class EventProcessor:
                                     priority=6,
                                     event_type="PROPOSAL_REVISION_REQUIRED",
                                     source="international_coordinator",
-                                    description=f"Round {round_rec.round_number} concluded; proposal revision required for round {session.current_round}.",
+                                    description=f"Round {last_round_num} concluded; proposal revision required for round {session.current_round}.",
                                     payload={"negotiation_id": session.negotiation_id},
                                 )
                             )

@@ -288,10 +288,11 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
         }
       } else if (type === 'decision_recorded' || type === 'country_decision' || type === 'policy_action') {
         const decId = String(payload.decision_id || envelope.event_id || `dec_${Date.now()}`);
+        const cId = String(payload.country_id || '');
         const dec: DecisionRecord = {
           decision_id: decId,
           simulation_id: simId,
-          country_id: String(payload.country_id || ''),
+          country_id: cId,
           tick: newTick,
           created_at_tick: newTick,
           action_id: String(payload.action_id || ''),
@@ -302,6 +303,14 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
           rag_sources: Array.isArray(payload.rag_sources) ? (payload.rag_sources as string[]) : undefined,
         };
         newDecisions.unshift(dec);
+
+        if (cId && newCountries[cId]) {
+          newCountries[cId] = {
+            ...newCountries[cId],
+            current_action: dec.label,
+            status: 'Coordinating',
+          };
+        }
 
         const evItem: SimulationEvent = {
           event_id: decId,
@@ -317,6 +326,22 @@ export const useSimulationStore = create<SimulationStoreState>((set) => ({
         };
         newEvents.unshift(evItem);
         newHistory.unshift(evItem);
+      } else if (type === 'country_notification') {
+        const cId = String(payload.country_id || '');
+        if (cId && newCountries[cId]) {
+          newCountries[cId] = {
+            ...newCountries[cId],
+            status: 'Notified',
+          };
+        }
+      } else if (type === 'information_received') {
+        const cId = String(payload.country_id || '');
+        if (cId && newCountries[cId]) {
+          newCountries[cId] = {
+            ...newCountries[cId],
+            status: 'Investigating',
+          };
+        }
       } else if (type === 'coordinator_proposal') {
         const prop = payload as unknown as CoordinatorProposal;
         if (prop && (prop.proposal_id || envelope.event_id)) {

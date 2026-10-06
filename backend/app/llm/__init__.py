@@ -5,6 +5,7 @@ from typing import Optional
 
 from app.config.settings import Settings, settings as default_settings
 from app.llm.anthropic_provider import AnthropicProvider
+from app.llm.local_provider import LocalOpenAICompatibleProvider, OllamaProvider
 from app.llm.mock_provider import MockLLMProvider
 from app.llm.provider import LLMProvider, LLMResult
 
@@ -13,6 +14,8 @@ __all__ = [
     "LLMResult",
     "MockLLMProvider",
     "AnthropicProvider",
+    "OllamaProvider",
+    "LocalOpenAICompatibleProvider",
     "get_llm_provider",
 ]
 
@@ -26,6 +29,21 @@ def get_llm_provider(settings: Optional[Settings] = None) -> LLMProvider:
 
     if provider_name == "mock":
         return MockLLMProvider(model=cfg.LLM_MODEL)
+
+    if provider_name == "ollama":
+        return OllamaProvider(
+            base_url=cfg.OLLAMA_BASE_URL,
+            model=cfg.LLM_MODEL,
+            default_timeout=cfg.LLM_TIMEOUT,
+        )
+
+    if provider_name in ("local", "vllm", "openai_compatible", "openai"):
+        return LocalOpenAICompatibleProvider(
+            base_url=cfg.LOCAL_LLM_URL,
+            model=cfg.LLM_MODEL,
+            api_key=cfg.LLM_API_KEY,
+            default_timeout=cfg.LLM_TIMEOUT,
+        )
 
     if provider_name == "anthropic":
         api_key = cfg.LLM_API_KEY or cfg.ANTHROPIC_API_KEY

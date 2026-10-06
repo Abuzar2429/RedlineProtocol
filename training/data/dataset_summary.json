@@ -1,0 +1,16 @@
+{
+  "total_sft_samples": 464,
+  "sft_train_count": 417,
+  "sft_val_count": 47,
+  "total_dpo_samples": 45,
+  "breakdown": {
+    "country_decision_samples": 405,
+    "coordinator_samples": 36,
+    "governance_qa_samples": 23
+  },
+  "exported_files": {
+    "sft_train": "training\\data\\redline_sft_train.jsonl",
+    "sft_val": "training\\data\\redline_sft_val.jsonl",
+    "dpo_train": "training\\data\\redline_dpo_train.jsonl"
+  }
+}

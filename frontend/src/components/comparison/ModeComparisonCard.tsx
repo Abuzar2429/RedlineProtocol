@@ -24,21 +24,21 @@ const MODE_THEMES: Record<string, {
     bg: 'bg-rose-950/10',
     accent: 'text-rose-400',
     badge: 'bg-rose-950/50 text-rose-300 border-rose-800',
-    tagline: 'Sovereign unilateral doctrine; zero multilateral accord',
+    tagline: 'Independent sovereign action without multilateral coordination',
   },
   partial: {
     border: 'border-amber-900/40 hover:border-amber-700/60',
     bg: 'bg-amber-950/10',
     accent: 'text-amber-400',
     badge: 'bg-amber-950/50 text-amber-300 border-amber-800',
-    tagline: 'Regional coalition; 50% quorum & simple majority',
+    tagline: 'Regional coalition with simple majority voting',
   },
   coordinated: {
     border: 'border-emerald-900/40 hover:border-emerald-700/60',
     bg: 'bg-emerald-950/10',
     accent: 'text-emerald-400',
     badge: 'bg-emerald-950/50 text-emerald-300 border-emerald-800',
-    tagline: 'Multilateral governance; 60% qualified majority',
+    tagline: 'Full multilateral governance with broad international consensus',
   },
 };
 
@@ -117,7 +117,7 @@ export const ModeComparisonCard: React.FC<ModeComparisonCardProps> = ({
         <div className="flex items-baseline justify-between">
           <div>
             <div className="text-[10px] font-mono uppercase text-slate-500 tracking-wider">
-              Phase 7 Composite Score
+              Overall Performance Score
             </div>
             <div className="flex items-baseline gap-2 mt-1">
               {result?.overall_score !== null && result?.overall_score !== undefined ? (
@@ -162,7 +162,7 @@ export const ModeComparisonCard: React.FC<ModeComparisonCardProps> = ({
       {/* Exact 4 Phase 7 Metrics Grid */}
       <div className="space-y-2 mb-4 flex-1">
         <div className="text-[10px] font-mono uppercase text-slate-400 tracking-wider mb-1">
-          Exact Four Governance Metrics
+          Key Performance Metrics
         </div>
 
         {/* 1. Risk Reduction */}
@@ -222,7 +222,7 @@ export const ModeComparisonCard: React.FC<ModeComparisonCardProps> = ({
         </div>
 
         <div className="flex justify-between">
-          <span className="text-slate-500">Virtual Duration:</span>
+          <span className="text-slate-500">Duration:</span>
           <span className="text-slate-200">
             {result?.final_tick !== undefined ? `T+${result.final_tick} min` : '—'}
           </span>

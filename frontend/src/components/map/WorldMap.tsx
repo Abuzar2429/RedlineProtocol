@@ -37,12 +37,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({ countryProfiles = {} }) => {
         attributionControl: false,
       });
 
-      // CartoDB Dark Matter tile layer for command center aesthetic
+      // Dark Canvas tile layer for command center aesthetic (zero API key required)
       L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
         {
-          subdomains: 'abcd',
-          maxZoom: 19,
+          maxZoom: 16,
+          attribution: 'Esri, DeLorme, NAVTEQ',
         }
       ).addTo(map);
 

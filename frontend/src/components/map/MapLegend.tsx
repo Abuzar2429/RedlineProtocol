@@ -3,10 +3,10 @@ import { Shield } from 'lucide-react';
 
 export const MapLegend: React.FC = () => {
   const items = [
-    { label: 'Unaware', color: 'bg-rose-500', border: 'border-rose-400/50', desc: 'No crisis telemetry' },
-    { label: 'Investigating', color: 'bg-amber-400', border: 'border-amber-400/50', desc: 'Assessing anomaly' },
+    { label: 'Unaware', color: 'bg-rose-500', border: 'border-rose-400/50', desc: 'No crisis alerts' },
+    { label: 'Investigating', color: 'bg-amber-400', border: 'border-amber-400/50', desc: 'Assessing situation' },
     { label: 'Notified', color: 'bg-blue-400', border: 'border-blue-400/50', desc: 'Alert confirmed' },
-    { label: 'Coordinating', color: 'bg-emerald-400', border: 'border-emerald-400/50', desc: 'Treaty / Action aligned' },
+    { label: 'Coordinating', color: 'bg-emerald-400', border: 'border-emerald-400/50', desc: 'Taking joint action' },
   ];
 
   return (

@@ -102,7 +102,7 @@ class DataLoader:
             raise FileNotFoundError(f"Scenarios directory not found: {self.scenarios_dir}")
 
         scenarios: List[ScenarioData] = []
-        for file_path in sorted(self.scenarios_dir.glob("scenario_*.yaml")):
+        for file_path in sorted(self.scenarios_dir.glob("*.yaml")):
             with open(file_path, "r", encoding="utf-8") as f:
                 raw_data = yaml.safe_load(f)
             scenario = ScenarioData.model_validate(raw_data)

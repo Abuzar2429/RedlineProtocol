@@ -111,7 +111,7 @@ export const SimulationTimeline: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-400 font-mono mt-0.5">
-              Authoritative Virtual Simulation Time • Spec §6.4
+              Chronological progression of simulation events and actions
             </p>
           </div>
         </div>
@@ -160,7 +160,7 @@ export const SimulationTimeline: React.FC = () => {
           <Clock className="w-8 h-8 text-slate-600 mb-2" />
           <h4 className="text-xs font-semibold text-slate-300 mb-1">No Timeline Events Recorded</h4>
           <p className="text-xs text-slate-500 max-w-sm">
-            Step or run the simulation engine to generate authoritative multi-agent decisions, proposals, and crisis escalations.
+            Step or run the simulation to generate multi-agent decisions, proposals, and events.
           </p>
         </div>
       ) : (

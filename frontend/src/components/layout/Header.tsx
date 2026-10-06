@@ -38,7 +38,7 @@ export const Header: React.FC = () => {
               AI Crisis Simulator
             </span>
             <span className="hidden sm:inline-block ml-2 text-[10px] font-mono tracking-widest px-1.5 py-0.5 rounded bg-slate-900 text-cyan-400 border border-slate-700 font-semibold">
-              COMMAND CENTER
+              CONTROL CENTER
             </span>
           </div>
         </Link>

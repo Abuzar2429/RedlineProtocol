@@ -1,0 +1,126 @@
+id: custom_global_satellite_constel_20862b
+scenario_id: custom_global_satellite_constel_20862b
+title: Global Satellite Constellation Neural Jamming
+description: A rogue cognitive payload hijacks low-Earth-orbit communication arrays,
+  degrading civilian GPS telemetry and jamming multilateral diplomatic crisis frequencies.
+severity: critical
+severity_score: 0.94
+affected_countries:
+- country_01
+- country_02
+- country_03
+- country_04
+- country_05
+- country_06
+- country_07
+- country_08
+- country_09
+- country_10
+- country_11
+- country_12
+- country_13
+- country_14
+- country_15
+origin_country: country_02
+information_delay:
+  country_02: 0
+  country_01: 2
+  country_03: 6
+  country_04: 8
+  country_05: 10
+  country_06: 12
+  country_07: 14
+  country_08: 16
+  country_09: 18
+  country_10: 20
+  country_11: 20
+  country_12: 20
+  country_13: 20
+  country_14: 20
+  country_15: 20
+timeline:
+- time_offset: 0
+  event: 'Initial anomaly detected: Global Satellite Constellation Neural Jamming.
+    Local sensors record erratic autonomous model telemetry.'
+  type: detection
+- time_offset: 3
+  event: Autonomous contagion spreads across digital routing gateways into regional
+    sovereign infrastructure.
+  type: spread
+- time_offset: 6
+  event: Neighboring national cyber command centers log anomalous payloads and request
+    official clarification.
+  type: escalation
+- time_offset: 10
+  event: Global international press breaks verified reports of systemic algorithmic
+    instability.
+  type: media
+- time_offset: 15
+  event: Multilateral crisis clearinghouse convenes emergency diplomatic session to
+    establish joint containment.
+  type: diplomatic
+- time_offset: 25
+  event: 'Session reaches critical inflection point: states must vote on binding collective
+    containment accords.'
+  type: resolution
+initial_evidence_completeness: 0.35
+evidence_grows_at: 0.04
+potential_impacts:
+- infrastructure
+- national_security
+- public_trust
+- sovereignty
+available_actions:
+- id: do_nothing
+  label: Do Nothing / Await Further Evidence
+  risk_reduction_value: 0.0
+  coordination_effect: -0.1
+  requires_agreement: false
+  visibility: private
+- id: investigate_internally
+  label: Conduct Internal Sovereign Forensic Investigation
+  risk_reduction_value: -5.0
+  coordination_effect: 0.0
+  requires_agreement: false
+  visibility: private
+- id: notify_affected
+  label: Issue Official Early Warning to Affected Neighboring States
+  risk_reduction_value: -15.0
+  coordination_effect: 0.25
+  requires_agreement: false
+  visibility: public
+- id: suspend_ai_system
+  label: Execute Sovereign Emergency Circuit-Breaker / Suspend System
+  risk_reduction_value: -25.0
+  coordination_effect: 0.15
+  requires_agreement: false
+  visibility: public
+- id: request_multilateral_audit
+  label: Request Joint Multilateral Technical Audit Team
+  risk_reduction_value: -20.0
+  coordination_effect: 0.35
+  requires_agreement: true
+  visibility: public
+- id: share_technical_evidence
+  label: Share Unredacted System Telemetry and Model Execution Logs
+  risk_reduction_value: -15.0
+  coordination_effect: 0.3
+  requires_agreement: false
+  visibility: bilateral
+- id: impose_temporary_restrictions
+  label: Impose Temporary Border Gateway Interruption and Firewall Isolation
+  risk_reduction_value: -10.0
+  coordination_effect: -0.15
+  requires_agreement: false
+  visibility: public
+- id: ratify_joint_containment
+  label: Ratify Multilateral Joint Containment and Recovery Accord
+  risk_reduction_value: -35.0
+  coordination_effect: 0.5
+  requires_agreement: true
+  visibility: public
+governance_docs_relevant:
+- emergency_procedures
+- incident_response
+- data_sharing_protocols
+- international_cooperation

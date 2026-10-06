@@ -22,6 +22,8 @@ import { LiveEventFeed } from '../../components/feed/LiveEventFeed';
 import { MetricsBar } from '../../components/metrics';
 import { NegotiationPanel } from '../../components/negotiation';
 import { SimulationTimeline } from '../../components/timeline';
+// @ts-expect-error standard jsx import
+import { NewspaperOutcomeSummary } from '../../components/outcome/NewspaperOutcomeSummary';
 import type { CountryData } from '../../types';
 
 export const SimulationPage: React.FC = () => {
@@ -32,6 +34,7 @@ export const SimulationPage: React.FC = () => {
   const currentSimulation = useSimulationStore((s) => s.currentSimulation);
   const setActiveSimulationId = useSimulationStore((s) => s.setActiveSimulationId);
   const loadInitialState = useSimulationStore((s) => s.loadInitialState);
+  const scoring = useSimulationStore((s) => s.scoring);
   const setScoring = useSimulationStore((s) => s.setScoring);
   const setNegotiationSessions = useSimulationStore((s) => s.setNegotiationSessions);
   const proposals = useSimulationStore((s) => s.proposals);
@@ -106,16 +109,46 @@ export const SimulationPage: React.FC = () => {
     };
   }, [simulationId, initializeSession, navigate]);
 
+  // Refresh full simulation data from backend
+  const refreshSimulationData = useCallback(async (simId: string) => {
+    try {
+      const [updatedState, score, negs] = await Promise.all([
+        apiClient.getFullSimulationState(simId),
+        apiClient.getScore(simId).catch(() => null),
+        apiClient.getNegotiations(simId).catch(() => []),
+      ]);
+      loadInitialState(simId, updatedState);
+      if (score) setScoring(score);
+      if (negs && negs.length > 0) setNegotiationSessions(negs);
+    } catch {
+      // quiet fallback
+    }
+  }, [loadInitialState, setScoring, setNegotiationSessions]);
+
+  // Periodic state refresh while simulation is actively running
+  useEffect(() => {
+    if (!simulationId) return;
+    const isRunning = currentSimulation?.status === 'running' || currentSimulation?.status === 'RUNNING';
+    if (!isRunning && controlActionInProgress !== 'run') return;
+
+    const interval = setInterval(() => {
+      void refreshSimulationData(simulationId);
+    }, 1500);
+
+    return () => clearInterval(interval);
+  }, [simulationId, currentSimulation?.status, controlActionInProgress, refreshSimulationData]);
+
   // Command handlers delegating strictly to backend
   const handleStep = async () => {
     if (!simulationId) return;
     setControlActionInProgress('step');
     try {
       await apiClient.stepSimulation(simulationId);
+      await refreshSimulationData(simulationId);
       addToast({
         type: 'info',
-        title: 'Step Dispatched',
-        message: 'Engine executing next tick step.',
+        title: 'Advancing',
+        message: 'Advancing simulation by 1 step.',
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Step command failed';
@@ -129,12 +162,13 @@ export const SimulationPage: React.FC = () => {
     if (!simulationId) return;
     setControlActionInProgress('run');
     try {
-      await apiClient.runSimulation(simulationId);
       addToast({
         type: 'success',
-        title: 'Continuous Execution',
+        title: 'Running',
         message: 'Simulation run started.',
       });
+      await apiClient.runSimulation(simulationId);
+      await refreshSimulationData(simulationId);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Run command failed';
       addToast({ type: 'error', title: 'Run Error', message: msg });
@@ -148,10 +182,11 @@ export const SimulationPage: React.FC = () => {
     setControlActionInProgress('pause');
     try {
       await apiClient.pauseSimulation(simulationId);
+      await refreshSimulationData(simulationId);
       addToast({
         type: 'info',
         title: 'Simulation Paused',
-        message: 'Execution paused by operator.',
+        message: 'Simulation paused.',
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Pause command failed';
@@ -166,10 +201,11 @@ export const SimulationPage: React.FC = () => {
     setControlActionInProgress('resume');
     try {
       await apiClient.resumeSimulation(simulationId);
+      await refreshSimulationData(simulationId);
       addToast({
         type: 'info',
         title: 'Simulation Resumed',
-        message: 'Resumed continuous execution.',
+        message: 'Simulation resumed.',
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Resume command failed';
@@ -184,10 +220,11 @@ export const SimulationPage: React.FC = () => {
     setControlActionInProgress('stop');
     try {
       await apiClient.stopSimulation(simulationId);
+      await refreshSimulationData(simulationId);
       addToast({
         type: 'warning',
         title: 'Simulation Stopped',
-        message: 'Engine session terminated.',
+        message: 'Simulation stopped.',
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Stop command failed';
@@ -242,7 +279,7 @@ export const SimulationPage: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2">
               <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase font-mono">
-                SESSION {simulationId.slice(0, 8)}
+                Session #{simulationId.slice(0, 8)}
               </h1>
               <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800 uppercase">
                 {currentSimulation?.mode ?? 'autonomous'}
@@ -260,18 +297,18 @@ export const SimulationPage: React.FC = () => {
           <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 font-mono text-xs">
             <div className="flex items-center space-x-1.5">
               <Clock className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="text-cyan-300 font-bold">T+{currentSimulation?.current_tick ?? 0}</span>
+              <span className="text-cyan-300 font-bold">Step {currentSimulation?.current_tick ?? 0}</span>
             </div>
             <div className="h-3 w-px bg-slate-700" />
             <div className="flex items-center space-x-1.5">
-              <span className="text-slate-500">PHASE:</span>
+              <span className="text-slate-500">Phase:</span>
               <span className="capitalize text-slate-300 font-medium">
                 {currentSimulation?.crisis_phase ?? 'early_warning'}
               </span>
             </div>
             <div className="h-3 w-px bg-slate-700" />
             <div className="flex items-center space-x-1.5">
-              <span className="text-slate-500">STATUS:</span>
+              <span className="text-slate-500">Status:</span>
               <span
                 className={`font-semibold uppercase ${
                   isRunning
@@ -293,8 +330,8 @@ export const SimulationPage: React.FC = () => {
             <button
               onClick={handleStep}
               disabled={controlActionInProgress !== null || isRunning || isCompleted}
-              aria-label="Advance Simulation by 1 Tick"
-              title="Step 1 Tick"
+              aria-label="Advance simulation by 1 step"
+              title="Step Forward"
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium flex items-center space-x-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
             >
               <SkipForward className="w-3.5 h-3.5 text-cyan-400" />
@@ -305,8 +342,8 @@ export const SimulationPage: React.FC = () => {
               <button
                 onClick={handlePause}
                 disabled={controlActionInProgress !== null}
-                aria-label="Pause Continuous Execution"
-                title="Pause Simulation"
+                aria-label="Pause simulation"
+                title="Pause"
                 className="px-3 py-1.5 rounded-lg bg-amber-950/80 hover:bg-amber-900/80 text-amber-300 border border-amber-800 text-xs font-medium flex items-center space-x-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
               >
                 <Pause className="w-3.5 h-3.5" />
@@ -316,8 +353,8 @@ export const SimulationPage: React.FC = () => {
               <button
                 onClick={handleResume}
                 disabled={controlActionInProgress !== null}
-                aria-label="Resume Execution"
-                title="Resume Simulation"
+                aria-label="Resume simulation"
+                title="Resume"
                 className="px-3 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-800 text-xs font-medium flex items-center space-x-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
@@ -327,8 +364,8 @@ export const SimulationPage: React.FC = () => {
               <button
                 onClick={handleRun}
                 disabled={controlActionInProgress !== null || isCompleted}
-                aria-label="Run Continuous Execution"
-                title="Continuous Run"
+                aria-label="Run simulation"
+                title="Run"
                 className="px-3 py-1.5 rounded-lg bg-cyan-950/80 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-800 text-xs font-medium flex items-center space-x-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
@@ -339,8 +376,8 @@ export const SimulationPage: React.FC = () => {
             <button
               onClick={handleStop}
               disabled={controlActionInProgress !== null || isCompleted}
-              aria-label="Stop Simulation Session"
-              title="Stop Simulation"
+              aria-label="Stop simulation"
+              title="Stop"
               className="px-3 py-1.5 rounded-lg bg-rose-950/80 hover:bg-rose-900/80 text-rose-300 border border-rose-800 text-xs font-medium flex items-center space-x-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
             >
               <Square className="w-3.5 h-3.5 fill-current" />
@@ -373,7 +410,7 @@ export const SimulationPage: React.FC = () => {
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>Treaty Chamber</span>
+              <span>Treaties & Negotiations</span>
               {proposals.length > 0 && (
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse ml-1" />
               )}
@@ -387,7 +424,7 @@ export const SimulationPage: React.FC = () => {
               }`}
             >
               <Radio className="w-3.5 h-3.5" />
-              <span>Live Feed</span>
+              <span>Live Event Feed</span>
             </button>
           </div>
 
@@ -400,7 +437,19 @@ export const SimulationPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Phase 12 Chronological Simulation Timeline */}
+      {/* Newspaper Article Outcome Summary */}
+      {currentSimulation && (scoring || isCompleted) && (
+        <NewspaperOutcomeSummary
+          simulation={currentSimulation}
+          scoring={scoring}
+          negotiation={proposals[0]}
+          mode={currentSimulation.mode}
+          scenarioTitle={currentSimulation.scenario_id}
+          initiallyExpanded={isCompleted}
+        />
+      )}
+
+      {/* Chronological Simulation Timeline */}
       <SimulationTimeline />
     </div>
   );

@@ -8,6 +8,7 @@ Provides:
 - International Coordinator proposal triggers
 - Real-time event broadcasting to WebSocket subscribers
 """
+import asyncio
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, status
 
@@ -181,16 +182,18 @@ async def run_simulation(
                 await default_websocket_manager.broadcast_simulation_event(simulation_id, ev)
             if step_res.is_completed:
                 break
+            await asyncio.sleep(0.04)
 
-        engine.state.status = "COMPLETED"
-        await default_websocket_manager.broadcast_event(
-            simulation_id=simulation_id,
-            event_type="SIMULATION_COMPLETED",
-            payload={"final_tick": engine.state.current_tick, "status": "COMPLETED"},
-            tick=engine.state.current_tick,
-            timestamp=engine.state.current_time,
-            category="complete",
-        )
+        if engine.state.status != "PAUSED":
+            engine.state.status = "COMPLETED"
+            await default_websocket_manager.broadcast_event(
+                simulation_id=simulation_id,
+                event_type="SIMULATION_COMPLETED",
+                payload={"final_tick": engine.state.current_tick, "status": "COMPLETED"},
+                tick=engine.state.current_tick,
+                timestamp=engine.state.current_time,
+                category="complete",
+            )
         return engine.state
     except ValueError as exc:
         raise HTTPException(

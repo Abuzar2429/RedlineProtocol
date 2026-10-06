@@ -8,6 +8,8 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { useUIStore } from '../../stores/uiStore';
+// @ts-expect-error standard jsx import
+import { TextScenarioInput } from '../../components/scenario/TextScenarioInput';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -119,7 +121,7 @@ export const DashboardPage: React.FC = () => {
             Crisis Simulator Control Center
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Global AI Governance Emergency Decision & Multilateral Coordination Environment
+            Explore, test, and compare how nations coordinate and respond during AI crises.
           </p>
         </div>
 
@@ -140,13 +142,21 @@ export const DashboardPage: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <Layers className="w-4 h-4 text-cyan-400" />
                 <h2 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-                  Initialize New Session
+                  Launch a Simulation
                 </h2>
               </div>
               <span className="text-[11px] font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800 px-2 py-0.5 rounded">
-                SIMULATION SHELL
+                NEW RUN
               </span>
             </div>
+
+            {/* Input Custom Scenario via Text */}
+            <TextScenarioInput
+              onScenarioCreated={(newSc: ScenarioData) => {
+                setScenarios((prev) => [newSc, ...prev]);
+                setSelectedScenarioId(newSc.id);
+              }}
+            />
 
             {/* Scenario Picker */}
             <div>
@@ -208,9 +218,9 @@ export const DashboardPage: React.FC = () => {
               </label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { id: 'coordinated' as SimulationMode, label: 'Coordinated' },
-                  { id: 'partial' as SimulationMode, label: 'Partial HITL' },
-                  { id: 'no_coordination' as SimulationMode, label: 'Autonomous' },
+                  { id: 'coordinated' as SimulationMode, label: 'Coordinated (Multilateral)' },
+                  { id: 'partial' as SimulationMode, label: 'Partial (Coalition)' },
+                  { id: 'no_coordination' as SimulationMode, label: 'Independent (Autonomous)' },
                 ].map(({ id, label }) => (
                   <button
                     key={id}
@@ -237,12 +247,12 @@ export const DashboardPage: React.FC = () => {
               {launching ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Initializing Backend Instance...</span>
+                  <span>Starting Simulation...</span>
                 </>
               ) : (
                 <>
                   <Play className="w-4 h-4 fill-current" />
-                  <span>Launch Simulation Command Shell</span>
+                  <span>Launch Simulation</span>
                 </>
               )}
             </button>
@@ -252,13 +262,13 @@ export const DashboardPage: React.FC = () => {
               <div>
                 <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400 uppercase">
                   <Scale className="w-3.5 h-3.5" />
-                  <span>Comparative Governance Matrix</span>
+                  <span>Comparative Analysis</span>
                 </div>
                 <h3 className="text-sm font-bold text-slate-100 mt-0.5">
-                  Three-Mode Comparative Evaluation
+                  Compare Governance Modes Side-by-Side
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Empirically test this crisis across Unilateral, Coalition, and Multilateral governance architectures side-by-side.
+                  Evaluate how the crisis unfolds under Independent, Coalition, and Multilateral coordination models.
                 </p>
               </div>
               <button
@@ -275,13 +285,13 @@ export const DashboardPage: React.FC = () => {
               <div>
                 <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-purple-400 uppercase">
                   <Radio className="w-3.5 h-3.5" />
-                  <span>Deterministic Presentation Engine</span>
+                  <span>Interactive Walkthrough</span>
                 </div>
                 <h3 className="text-sm font-bold text-slate-100 mt-0.5">
-                  Seeded Demo & Authoritative Replay Center
+                  Guided Demo & Replay Center
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  100% reproducible offline seeded simulation, fallback verification, and timeline scrubbing without re-running LLMs.
+                  Explore pre-recorded scenarios with instant playback, scrub through timelines, and inspect negotiation outcomes.
                 </p>
               </div>
               <button
@@ -307,27 +317,27 @@ export const DashboardPage: React.FC = () => {
                 </h2>
               </div>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
-                Phase 9
+                ONLINE
               </span>
             </div>
 
             {ragHealth ? (
               <div className="space-y-2 text-xs font-mono">
                 <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
-                  <span className="text-slate-500">Vector Store:</span>
+                  <span className="text-slate-500">Knowledge Index:</span>
                   <span className="flex items-center text-emerald-400 gap-1">
                     <ShieldCheck className="w-3.5 h-3.5" />
                     {ragHealth.status}
                   </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-800/60">
-                  <span className="text-slate-500">Documents / Chunks:</span>
+                  <span className="text-slate-500">Documents & Sources:</span>
                   <span className="text-slate-300">
                     {ragHealth.document_count} docs / {ragHealth.chunk_count} chunks
                   </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-800/60">
-                  <span className="text-slate-500">Embedding:</span>
+                  <span className="text-slate-500">Search Model:</span>
                   <span className="text-slate-300">{ragHealth.embedding_model}</span>
                 </div>
               </div>

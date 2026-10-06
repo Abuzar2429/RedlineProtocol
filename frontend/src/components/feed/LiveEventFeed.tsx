@@ -118,7 +118,7 @@ export const LiveEventFeed: React.FC = () => {
           </div>
           <div>
             <h3 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-100">
-              Live Multilateral Feed
+              Live Event Feed
             </h3>
             <span className="text-[10px] text-slate-400">
               {filteredEvents.length} events logged

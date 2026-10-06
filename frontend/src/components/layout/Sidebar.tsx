@@ -27,14 +27,14 @@ export const Sidebar: React.FC = () => {
       to: '/comparisons',
       label: '3-Mode Comparison',
       icon: Scale,
-      badge: 'P13',
+      badge: 'COMPARE',
       badgeColor: 'bg-amber-950 text-amber-300 border-amber-800',
     },
     {
       to: '/demo',
       label: 'Demo & Replay Center',
       icon: PlaySquare,
-      badge: 'P14',
+      badge: 'DEMO',
       badgeColor: 'bg-purple-950 text-purple-300 border-purple-800',
     },
   ];
@@ -82,20 +82,20 @@ export const Sidebar: React.FC = () => {
         {!sidebarCollapsed && (
           <div className="mt-6 px-4">
             <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2">
-              System Architecture
+              Core Modules
             </div>
             <div className="space-y-1.5 text-xs text-slate-400 font-mono">
               <div className="flex items-center space-x-2 py-1 px-2 rounded bg-slate-900/40 border border-slate-800/60">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                <span className="text-[11px] text-slate-300">Simulation Clock (P3)</span>
+                <span className="text-[11px] text-slate-300">Simulation Engine</span>
               </div>
               <div className="flex items-center space-x-2 py-1 px-2 rounded bg-slate-900/40 border border-slate-800/60">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span className="text-[11px] text-slate-300">Voting Engine (P6)</span>
+                <span className="text-[11px] text-slate-300">Multilateral Voting</span>
               </div>
               <div className="flex items-center space-x-2 py-1 px-2 rounded bg-slate-900/40 border border-slate-800/60">
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
-                <span className="text-[11px] text-slate-300">Deterministic Scoring (P7)</span>
+                <span className="text-[11px] text-slate-300">Outcome Scoring</span>
               </div>
             </div>
           </div>

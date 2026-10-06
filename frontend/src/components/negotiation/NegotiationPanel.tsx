@@ -64,13 +64,13 @@ export const NegotiationPanel: React.FC = () => {
           <VoteIcon className="w-8 h-8 text-cyan-400/80" />
         </div>
         <div className="text-[11px] font-mono text-cyan-400 uppercase tracking-wider mb-1.5 font-semibold">
-          International Coordination Chamber
+          Negotiation Room
         </div>
         <h3 className="text-sm font-bold text-slate-200 mb-2">
           No Negotiation Session Active
         </h3>
         <p className="text-xs text-slate-400 max-w-sm leading-relaxed mb-4">
-          The International Coordinator will table a multilateral treaty proposal once crisis detection and national positions are established.
+          A multilateral treaty proposal will appear here once crisis conditions and national positions are established.
         </p>
         <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800 text-[11px] font-mono text-slate-400">
           <Clock className="w-3.5 h-3.5 text-cyan-400" />
@@ -181,14 +181,14 @@ export const NegotiationPanel: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2">
               <h2 className="text-xs font-bold text-slate-100 uppercase tracking-wider font-mono">
-                Multilateral Negotiation Chamber
+                Multilateral Negotiation Room
               </h2>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-300 border border-slate-700">
                 Round {currentRoundNum} of {maxRounds}
               </span>
             </div>
             <p className="text-[11px] text-slate-400 font-mono mt-0.5">
-              Phase 5–6 International Coordinator Treaty Engine
+              Multilateral Coordination & Treaty Framework
             </p>
           </div>
         </div>
@@ -258,7 +258,7 @@ export const NegotiationPanel: React.FC = () => {
             <div className="space-y-1.5">
               <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold flex items-center space-x-1.5">
                 <Sparkles className="w-3 h-3 text-cyan-400" />
-                <span>Proposed Actionable Provisions</span>
+                <span>Key Treaty Provisions</span>
               </div>
               <ul className="space-y-1">
                 {activeProposalVersion.items.map((item, idx) => (
@@ -280,7 +280,7 @@ export const NegotiationPanel: React.FC = () => {
           {activeProposalVersion.rationale && (
             <div className="pt-2 border-t border-slate-800/60">
               <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1">
-                Public Collective Rationale
+                Coordinator Rationale
               </div>
               <p className="text-[11px] text-slate-400 italic">
                 "{activeProposalVersion.rationale}"
@@ -301,7 +301,7 @@ export const NegotiationPanel: React.FC = () => {
       {/* Country Alignment Breakdown */}
       <div className="p-3.5 rounded-xl bg-slate-950/50 border border-slate-800/90 space-y-2.5">
         <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-          Country Alignment Positions
+          Country Positions
         </div>
 
         <div className="space-y-2">
@@ -357,7 +357,7 @@ export const NegotiationPanel: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold flex items-center space-x-1.5">
               <VoteIcon className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Deterministic Voting Outcome</span>
+              <span>Voting Outcome</span>
             </div>
             <span
               className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
@@ -448,7 +448,7 @@ export const NegotiationPanel: React.FC = () => {
         return (
           <div className="p-3 rounded-xl bg-slate-950/50 border border-slate-800/90 space-y-1.5">
             <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-semibold">
-              Unresolved Policy Issues
+              Unresolved Issues
             </div>
             <ul className="space-y-1">
               {issues.map((issue: string, idx: number) => (

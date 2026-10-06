@@ -5,11 +5,14 @@ import { SimulationPage } from '../pages/Simulation/SimulationPage';
 import { ComparisonPage } from '../pages/Comparison/ComparisonPage';
 import { DemoPage } from '../pages/Demo/DemoPage';
 import { NotFoundPage } from '../pages/NotFound/NotFoundPage';
+// @ts-expect-error standard jsx import
+import { RouteErrorBoundary } from '../components/feedback/RouteErrorBoundary';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <AppShell />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         index: true,
